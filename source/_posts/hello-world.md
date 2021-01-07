@@ -150,6 +150,132 @@ const router = new vueRouter({
 })
 ```
 
+2.keep-alive 缓存页面
+
+```
+<template>
+    <div id="app>
+        <keep-alive>
+            <router-view />
+        </keep-alive>
+    </div>
+</template>
+```
+
+3.使用 v-show 复用 DOM
+
+4.v-for 遍历避免同时使用 v-if(选项有判断直接放在计算属性)
+
+5.长列表性能优化
+.纯数据展示，不会有任何变化，就不需要做响应化
+
+```
+export default {
+    data: () => ({
+        users: []
+    })
+}
+async created() {
+    const users = await axios.get("/api/users");
+    this.users = object.freeze(users);
+}
+```
+
+.如果是大数据长列表，可采用虚拟滚动，只渲染少部分区域的内容
+
+```
+<recycle-scroller class="items" :items="items" :item-size="24">
+    <template v-slot="{item}">
+        <FetchItemView :item="item" @vote="voteItem(item)"/>
+    </template>
+</recycle-scroller>
+```
+
+6.事件的销毁
+
+Vue 组件销毁时，会自动解绑它的全部指令及事件监听器，但仅限于组件本身的事件,和组件关系不大则需要手动在 beforeDestory 清除
+
+7.图片懒加载
+
+页面内未出现在可视区域内的图片先不做加载，滚动到可视区域后再加载
+
+```
+<img v-lazy="/static/img/1.png">
+```
+
+8.第三方插件按需引入
+
+9.无状态的组件标记为函数式组件
+
+```
+<tempalte functional>
+    <div>
+        <div v-if="props.value" class="on"></div>
+        <section v-else class="off"></section>
+    </div>
+</template>
+<script>
+export default {
+    props: ['value']
+}
+</script>
+```
+
+10.子组件分割
+
+```
+<template>
+    <div>
+        <childComp/>
+    </div>
+</template>
+<script>
+export default {
+    components: {
+        childComp: {
+            methods: {
+                heavy () { /*耗时任务*/}
+            },
+            render (h) {
+                return h('div', this.heavy())
+            }
+        }
+    }
+}
+</script>
+```
+
+11.变量本地化
+
+```
+<template>
+    <div>
+        {{ result }}
+    </div>
+</template>
+
+<script>
+import { heavy } from '@/utils
+
+export default {
+    props: ['start'],
+    computed: {
+        base () { return 42 },
+        result () {
+            const base = this.base // 不要频繁引用this.base
+            let result = this.start
+            for (let i = 0; i < 1000; i++) {
+                result += heavy(base)
+            }
+            return result
+        }
+    }
+}
+</script>
+```
+
+12.SSR
+
 ## Quick Start
 
 ### Create a new post
