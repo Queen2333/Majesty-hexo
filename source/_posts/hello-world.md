@@ -2,7 +2,7 @@
 title: 前端架构--Vue源码分析
 ---
 
-基于面试的 Vue 相关知识点
+基于源码的 Vue 相关面试知识点
 
 <!-- Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [documentation](https://hexo.io/docs/) for more info. If you get any problems when using Hexo, you can find the answer in [troubleshooting](https://hexo.io/docs/troubleshooting.html) or you can ask me on [GitHub](https://github.com/hexojs/hexo/issues). -->
 
@@ -333,6 +333,130 @@ Vue2 的响应式系统使用 Object.defineProperty 的 getter 和 setter。Vue3
 6.高可维护性
 
 Vue3 将带来更可维护的源代码，它不仅会使用 TypeScript，而且许多包被解耦，更加模块化
+
+---
+
+#### computed、watch、methods 对比
+
+1.computed 属性的结果会被缓存，除非依赖的响应式属性变化才会重新计算。
+
+    主要当作属 性来使用;(注:在引用的时候，一定不要加 () 去调用，直接把它当作普通 属性去使用 就好了;
+    只要 计算属性，这个 function 内部，所用到的 任何 data 中的数据发送了变 化，就会立即重新计算这个
+    计算属性的值;计算属性的求值结果，会被缓存起来，方便 下次直接使用; 如果 计算属性方法中，所有的任
+    何数据，都没有发生过变化，则不会重 新对计算属性求值;)适合对于任何复杂逻辑或一个数据属性在它所依赖
+    的属性发生变化时，也要发生变化，即一个属性受多个属性影响时使用。
+
+2.methods 方法表示一个具体的操作，主要书写业务逻辑;
+
+3.watch 一个对象，键是需要观察的表达式，值是对应回调函数。
+
+    主要用来监听某些特定数 据的变化，从而进行某些具体的业务逻辑操作;可以看作是 computed 和 methods
+    的结合体。需要在数据变化时执行异步或开销较大的操作时使用，即当一条数据影响多条数据的时候。
+
+---
+
+#### Vue 拓展某现有组件
+
+1.使用 Vue.mixin 全局混入
+
+    mixin的调用顺序：混入对象的钩子将在组件自身钩子之前调用，如果遇到全局混入（Vue.mixin），全局混入
+    的执行顺序要先于混入和组件里的方法
+
+2.加 slot 拓展
+
+    默认插槽和匿名插槽：slot用来获取组件中的原内容
+
+    具名插槽
+
+---
+
+#### 对 Vue 生命周期的理解（结合生命周期图）
+
+1.实例化 new Vue()
+
+    实例化之后，会执行以下操作。根据Vue源码，可看到Vue本质就是一个function。new Vue()的过程就是初始化
+    参数、生命周期、事件等一系列过程（src/core/instance/index.js）
+
+2.初始化事件 生命周期函数
+
+    此时这个对象身上只有默认的一些生命周期和默认事件，其他东西未被创建
+
+3.beforeCreated(创建前)
+
+    在实例初始化之后，数据观测（data observe）和event/watcher事件配置之前就被调用。此时拿不到data和
+    props里面的数据，data和methods中的数据还没初始化
+
+4.注射响应
+
+    injection(注射器) reactivity(响应)给数据添加观察者
+
+5.created(创建后)
+
+    在实例创建后被立即调用，此时实例已完成数据观测，属性和方法的运算，watch/event事件回调，挂载阶段还
+    没开始，$el尚不可用。因为上一步给数据添加了观察者，所以现在可访问到data里的数据。此钩子常用，可以
+    请求数据。如果要调用methods中的方法或者操作data中的数据，要在created里操作。因为请求数据是异步的，
+    所以发送请求宜早不宜迟。（src/core/instance/init.js initMixin）
+
+6.是否存在 el
+
+    el指明挂载目标，这个步骤就是判断是否有el，如果没有就判断有没有调用实例上的$mount('')方法，这两个是
+    等价的。（src/core/instance/init.js）
+
+7.判断是否有 template
+
+    如果有则渲染template里的内容
+    如果没有则渲染el指明的挂载对象里的内容（src/platforms/web/entry-runtime-with-compiler.js $mount）
+
+8.beforeMount(挂载前)
+
+    挂载之前被调用，相关render函数首次被调用
+
+9.替换 el
+
+    这时会在实里例上创建一个el（vm.$el），替换掉原来的el，也是真正的挂载
+
+10.mounted(挂载后)
+
+    实例挂载后调用此时el已被新创建的vm.$el替换，若根实例挂载到了文档上的元素上，当mounted调用时vm.$el
+    也在文档内。注意mounted不会保证所有子组件一起挂载。DOM已加载完成，可以操作DOM了。只要执行完mounted，
+    就代表整个vue实例已经初始化完毕，一般在此操作DOM
+    （src/platforms/web/runtime/index.js $mount -> src/core/instance/lifecycle.js mountComponent）
+
+11.dataChange
+
+    当数据变化时：
+
+    在beforeUpdate发生在虚拟dom打补丁前，这时适合在更新前访问现有dom，如手动移除已添加的事件监听器
+    在beforeUpdate(更新前)和updated(更新后)之间会进行DOM的重新渲染和补全
+    （src/core/instance/lifecycle.js）
+
+    接着是updated（src/core/observer/scheduler.js callUpdatedHooks）：组件dom已更新，可执行依赖于
+    dom的操作，多数情况下应在此期间更改状态。
+    如需改变，最好使用watcher或计算属性取代。注意updated不会保证所有子组件一起被重绘
+
+12.callDestory(src/core/instance/lifecycle.js lifecycleMixin $destroy)
+
+    beforeDestory(销毁前)和destroy(销毁后)这两个钩子是需要我们手动调用实例上的$destroy方法才会触发
+
+    当$destroy方法调用后
+
+    beforeDestroy销毁前触发：此时实例仍可用
+
+    移除数据劫持、事件监听、子组件属性 所有东西还保留只是不能修改
+
+    destroy销毁后触发： Vue实例所有指令被解绑，所有事件监听器被移除，所有子实例也被销毁
+
+13.新增钩子
+
+    activated: keeo-alive组件激活时调用，类似created没有真正创建，只是激活
+
+    deactivated: keep-alive组件停用时调用，类似destroyed没有真正移除，只是禁用
+
+    在2.2.0及其更高版本中，activated和deactivated将会在树内的所有嵌套组件中触发
+
+---
+
+#### Vuex 使用和理解
 
 ## Quick Start
 
