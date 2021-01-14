@@ -456,7 +456,79 @@ Vue3 将带来更可维护的源代码，它不仅会使用 TypeScript，而且�
 
 ---
 
-#### Vuex 使用和理解
+#### nextTick 原理
+
+vue 如何检测到 DOM 更新完毕：MutationObserver API
+MutationObserver：是 HTML5 新增属性，用于监听 DOM 修改事件，能见听到节点的属性、文本内容、子节点等的改动
+
+```
+var observer = new MutationObserver(function() {
+    console.log('DOM被修改了')
+})
+var article = document.querySelector('article')
+observer.observer(article)
+```
+
+vue 中的 nextTick 实现(src/core/util/env.js):
+
+    如果检测到浏览器支持MutationObserver则创建一个文本节点，监听文本节点的改动，以此触发nextTickHandler，也就
+    是dom更新完毕的回调的执行
+
+事件循环机制（Event Loop）
+
+    浏览器使用事件循环机制协调各种事件的处理。
+    事件循环会维护一个或多个任务队列，事件作为任务源往队列中加入任务，每执行完一个就从队列中移除它，这就是一次事
+    件循环
+
+    setTimeOut就是在队列末尾加入了一个任务
+
+    每次事件循环最后都会有一个ui render步骤即更新dom
+    for循环同属一个task，浏览器只在task执行完后进行一次dom更新
+
+    所以vue运用此思路，并不是用MutationObserver监听dom，而是用队列控制的方式达到目的
+
+    vue数据响应过程包含：数据更改->通知watcher->更新dom。而数据更改不受我们控制，可能在任何时候发生，如果刚好
+    在重绘之前，就会发生多次渲染，性能浪费，这是vue不希望的。
+
+    于是vue的队列控制还需要了解microtask
+
+microtask 微任务
+
+    每次事件循环都包含一个微任务队列，在循环结束后依次执行队列中的微任务并移除，再开始下一次事件循环
+
+    宏任务要等为任务执行完才能执行，微任务有更高的优先级
+
+    microtask此特性是做队列控制的最佳选择，vue进行DOM更新内部也是调用nextTick来做异步队列控制。当我们调用
+    nextTick，它就在更新DOM的那个微任务后追加了我们自己的回调函数，从而确保我们的代码在DOM更新后执行，也避
+    免了setTimeOut可能存在的多次执行问题
+
+    常见微任务：Promise、MutationObserver、Object.observer(已废弃)、以及node.js中的process.nextTick
+
+    vue用MutationObserver是想利用其微任务特性而并非做DOM监听，用不用都行，在vue2.5版本中已删去了
+    MutationObserver相关代码，因为它是HTML5新增的特性，在IOS上尚有bug
+
+    最优的微任务策略就是Promise，但是Promise是es6新特性，也存在兼容问题，于是vue面临降级策略
+
+Vue 的降级策略
+
+    如果当前环境不支持Promise，vue只能降级为宏任务(macrotask)来做队列控制
+
+    setTimeOut执行的最小时间间隔是4ms左右，会比较延迟，不是最优方案
+
+    在vue2.5源码中，宏任务降级方案依次为：setimmadiate, MessageChannel, setTimeOut
+    setimmadiate最理想但是只有IE和node.js支持
+    MessageChannel的onmessage回调也是microtask，但也是个新API，面临兼容问题
+    setTimeOut是兜底方案
+
+总结：
+
+    1.vue用异步队列的方式控制DOM更新和nextTick回调先后执行
+
+    2.microtask因为其优先级特性，能确保队列中的微任务在一次事件循环前被执行完毕
+
+    3.因为兼容性问题，vue不得不做了microtask向macrotask的降级方案
+
+---
 
 ## Quick Start
 
