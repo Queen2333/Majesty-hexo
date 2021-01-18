@@ -530,6 +530,41 @@ Vue 的降级策略
 
 ---
 
+#### Vue 双向数据绑定原理
+
+设计思想：观察者模式
+
+Dep 对象：Dependency 依赖的简写。包含三个主要属性：id，subs，target 和四个主要函数 addSub，removeSub，depend，
+notify，是观察者的依赖集合，负责在数据发生改变时，使用 notify 触发保存在 subs 下的订阅列表，依次更新数据和 DOM
+
+Observer 对象：即观察者，包含两个主要属性 value，dep。做法是使用 getter、setter 方法覆盖默认的取值和赋值操作，将对象
+封装为响应式对象，每一次调用时更新依赖列表，更新值时触发订阅者。绑定在对象的 ob 原型链属性上
+
+vue 数据双向绑定通过‘数据劫持’ + 订阅发布模式实现
+
+数据劫持: 指的是在访问或者修改对象的某个属性时，通过一段代码拦截这个行为，进行 额外的操作或者修改返回结果 典型的有
+
+    1.Object.defineProperty()
+    2.es6 中 Proxy 对象
+    vue2.x 使用 Object.defineProperty();
+    vue3.x 使用 Proxy;
+
+订阅发布模式: 对象间的一种一对多的依赖关系，当一个对象的状态发生改变时，所有依 赖于它的对象都将得到通知 订阅发布模式
+中事件统一由处理中心处理，订阅者发布者互不干扰。
+
+优点: 实现更多的控制，做权限处理，节流控制之类，例如:发布了很多消息，但是不是 所有订阅者都要接收
+
+vue 中如何实现:
+
+    利用 Object.defineProperty();把内部解耦为三部分
+    Observer: 递归的监听对象上的所有属性，当属性改变时触发对应的 watcher
+    watcher(观察者): 当蒋婷的数据值修改时，执行相应的回调函数，更新模板内容 dep:链接 observer 和 watcher，每
+    一个observer 对应一个 dep,内部维护一个数组，保存 与该 observer 相关的 watcher
+    proxy 实现观察者模式: 观察者模式(Observer mode)指的是函数自动观察数据对象，一 旦对象有变化，函数就会自动执
+    行
+
+---
+
 ## Quick Start
 
 ### Create a new post
