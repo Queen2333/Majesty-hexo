@@ -558,10 +558,70 @@ vue 中如何实现:
 
     利用 Object.defineProperty();把内部解耦为三部分
     Observer: 递归的监听对象上的所有属性，当属性改变时触发对应的 watcher
-    watcher(观察者): 当蒋婷的数据值修改时，执行相应的回调函数，更新模板内容 dep:链接 observer 和 watcher，每
+    watcher(观察者): 当监听的数据值修改时，执行相应的回调函数，更新模板内容 dep:链接 observer 和 watcher，每
     一个observer 对应一个 dep,内部维护一个数组，保存 与该 observer 相关的 watcher
     proxy 实现观察者模式: 观察者模式(Observer mode)指的是函数自动观察数据对象，一 旦对象有变化，函数就会自动执
     行
+
+---
+
+#### Vue-router 导航钩子
+
+1.全局导航钩子
+
+beforeEach(to, from, next)：路由改变前调用
+
+    常用验证用户权限
+
+    to: 即将要进入的目标路由对象;
+
+    from: 当前导航即将要离开的路由对象;
+
+    next: 路由控制参数
+
+    ```
+        next() // 如一切正常，调用此方法进入下一个钩子
+        next(false) // 取消导航
+        next('route') // 当前导航被中断，然后进行一个新导航
+        next('error') // 如果一个error实例，则导航会被终止且该错误会被传递给router.onError()
+
+    ```
+
+afterEach(to, from): 路由改变后的钩子
+
+    常用自动让页面返回最顶端
+
+    用法相似，少了next参数
+
+2.路由配置中导航钩子
+
+beforeEnter(to, from, next)
+
+    用法同上
+
+3.组件内部导航钩子
+
+beforeRouteEnter(to, from, next)
+
+    该组件的对应路由被comfirm前调用
+
+    此时实例未被创建，所以不能获取实例(this)
+
+beforeRouteUpdate(to, from, next)
+
+    当前路由改变，但该组件被复用时调用
+
+    该组件内可以访问实例(this)
+
+beforeRouteLeave(to, from, next)
+
+    当导航离开组件的对应路由时调用
+
+    该组件内可以访问实例(this)
+
+4.路由监测变化
+
+watch 监听$router 对象
 
 ---
 
