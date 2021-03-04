@@ -62,7 +62,7 @@ diff 算法并非 vue 专用，凡是涉及虚拟 DOM 都用到了 diff 算法
 
 #### Vue 组件化的理解
 
-组件定义：(src/core/global-api/assets.js)
+组件定义：(src/core/global-api/assets.js)可复用的 Vue（VueComponent）实例
 
 组件化优点：(lifecycle.js-mountComponent()) 每个组件有 watcher 与之对应，合理切割可以减少重新渲染面积
 
@@ -124,7 +124,7 @@ diff 算法并非 vue 专用，凡是涉及虚拟 DOM 都用到了 diff 算法
 
 4.$parent/$children
 
-5.$attrs/$listeners
+5.$attrs/$listeners/$root
 
 6.provide/inject
 
@@ -333,6 +333,20 @@ Vue2 的响应式系统使用 Object.defineProperty 的 getter 和 setter。Vue3
 6.高可维护性
 
 Vue3 将带来更可维护的源代码，它不仅会使用 TypeScript，而且许多包被解耦，更加模块化
+
+---
+
+#### Vue 监听数据的三种方法
+
+1.在 input 标签里绑定 keyup 事件
+
+2.watch 监听数据变化:监视 data 中指定数据的变化，然后触发这个 watch 中对应的 function 处理函数，
+该方法可以不用绑定事件;
+
+watch 监听路由变化:
+`watch: { '$route.path': function (newVal, oldVal) { ... } }`
+
+3.computed 计算属性的使用
 
 ---
 
@@ -565,6 +579,30 @@ vue 中如何实现:
 
 ---
 
+#### Object.defineProperty 和 Proxy 的区别
+
+defineproperty 只能监听某个属性不能全对象监听，proxy 不用设置具体属性
+
+    defineproperty监听需要知道那个对象的那个属性，而proxy只需要知道那个对象就可以了。也就是会省去for in 循环
+    提高了效率
+
+proxy 不需要借助外部 value，也有单独相配的对象即 Reflect
+
+    eg：
+    ```
+    var ob={a:1,b:2}
+    ```
+    在proxy的get里面有target，key，receiver三个值，其中target是对象ob，key是ob.a，receiver是，set里面除了这
+    三个额外多加了一个value，value是传出来的新值。所以在get里return的就是target[key]，set里面return的是
+    target[key]=value或者用proxy里的Reflect.set(target，key，value）这样写优雅一点
+
+不会污染原对象（关键区别）
+
+    proxy去代理了ob，他会返回一个新的代理对象不会对原对象ob进行改动，而defineproperty是去修改元对象，修改元对
+    象的属性，而proxy只是对元对象进行代理并给出一个新的代理对象
+
+---
+
 #### Vue-router 导航钩子
 
 1.全局导航钩子
@@ -624,6 +662,11 @@ beforeRouteLeave(to, from, next)
 watch 监听$router 对象
 
 ---
+
+#### 模板语法的实现原理
+
+Vue 通过它的编译器将模板编译成渲染函数，在数据发生变化时在此执行渲染函数，通过对比两次执行结果得
+出要做的 dom 操作
 
 ## Quick Start
 
