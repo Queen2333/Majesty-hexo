@@ -544,7 +544,7 @@ Vue 的降级策略
 
 ---
 
-#### Vue 双向数据绑定原理
+#### Vue 双向数据绑定(响应式)原理
 
 设计思想：观察者模式
 
@@ -559,7 +559,7 @@ vue 数据双向绑定通过‘数据劫持’ + 订阅发布模式实现
 数据劫持: 指的是在访问或者修改对象的某个属性时，通过一段代码拦截这个行为，进行 额外的操作或者修改返回结果 典型的有
 
     1.Object.defineProperty()
-    2.es6 中 Proxy 对象
+    2.es6 中 Proxy 对象(兼容性不太好)
     vue2.x 使用 Object.defineProperty();
     vue3.x 使用 Proxy;
 
@@ -667,6 +667,112 @@ watch 监听$router 对象
 
 Vue 通过它的编译器将模板编译成渲染函数，在数据发生变化时在此执行渲染函数，通过对比两次执行结果得
 出要做的 dom 操作
+
+---
+
+#### 递归组件
+
+组件可以在他们自己模板中调用自身
+
+一定要有一个结束的条件，可使用 v-if="false"作为递归组件的结束条件。用到递归组件，数据格式是需要
+满足的如下：
+
+```
+<template>
+    <div>
+        <ul>
+            <li v-for="(item, index) in list" :key="index">
+                <p>{{item.name}}</p>
+                <tree-menu :list="list">
+            </li>
+        </ul>
+    </div>
+</template>
+<script>
+    export default {
+        components: {
+            treeMenu
+        },
+        data() {
+            return {
+                list: [
+                    {
+                        name: '全栈工程师',
+                        cList: [
+                            {name: 'vue'},
+                            {
+                                name: 'react',
+                                cList: [
+                                    {
+                                        name: 'js',
+                                        cList: [{name: 'css'}]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {name: '高级工程师'}
+                ]
+            }
+        }
+    }
+</script>
+
+```
+
+#### Vue 必会 api
+
+1.数据相关
+
+    Vue.set(vm.$set): 向响应式对象中追加属性，并希望这个属性也是响应式，且触发视图更新
+
+    Vue.delete(vm.$delete): 删除对象的属性，对象如是响应式的，能确保触发试图更新
+
+2.事件相关
+
+    vm.$on: 监听当前实例上的自定义事件，可由vm.$emit触发。回调函数接收所有传入事件的参数
+    并非在子组件派发，在父组件接受，父子组件为同一实例。
+    转换成代码形式如下：
+
+    ```
+    vm.$on('test', function(msg) {
+        console.log(msg)
+    })
+    ```
+
+    vm.$emit: 触发当前实例上的事件，附加参数会传给监听器回调
+
+    典型应用：事件总线
+
+        通过在Vue原型上添加一个Vue实例作为事件总线，实现组件间相互通信，且不受组件关系的
+        影响。（Vue.prototype.$bus = new Vue()）
+
+3.节点引用
+
+    ref和vm.$refs：ref被用来给元素或子组件注册引用信息。引用信息将会注册在父组件的$refs对
+    象上。如果在普通的DOM元素上使用，引用指向的就是DOM元素；如果用在子组件上，引用就指向组件
+
+    注意：ref是作为渲染结果被创建的，在初始渲染时不能访问（至少在mounted之后访问）；$refs
+    不是响应式的，不要试图用它在模板中做数据绑定；当v-for用于元素或组件时，引用信息将是包含
+    DOM节点或组件实例的数组
+
+---
+
+#### 动画
+
+    1.css过度和动画中自动应用class
+    2.配合使用第三方css动画库，如animate.css
+    3.在过渡钩子函数中使用js直接操作dom
+    4.配合使用第三方js动画库，如velocity.js
+    5.列表过度利用trasition-group可以对v-for渲染每个元素应用过度
+        ```
+            <transition-group name="fade">
+                <div v-for="c in coures" :key="c.name">
+                    {{c.name}} - ${{c.price}}
+                    <button @click="addToCart(c)">加购</button>
+                </div>
+            </transition-group>
+        ```
 
 ## Quick Start
 
