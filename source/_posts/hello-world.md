@@ -774,6 +774,44 @@ Vue 通过它的编译器将模板编译成渲染函数，在数据发生变化�
             </transition-group>
         ```
 
+---
+
+#### 过滤器
+
+    可用于对传入的文本进行格式化：双花括号插值和v-bind表达式
+
+    ```
+        <!-- 双花括号 -->
+        {{ message | capitalize }}
+
+        <!-- v-bind -->
+        <div v-bind:id="rawId | formatId"></div>
+
+        filters: {
+            capitalize(value, symbol = '¥') {
+                return symbol + value
+            }
+        }
+    ```
+
+---
+
+#### 自定义指令
+
+    有复用的功能，并且需要操作dom元素时可使用自定义指令
+
+    ```
+        Vue.directive('permission', {
+            inserted(el, binding) {
+                console.log(binding)
+                if (role !== binding.value) {
+                    el.parentElement.removeChild()
+                }
+            }
+        })
+
+        <button v-permission="'admin'">
+    ```
 ## Quick Start
 
 ### Create a new post
