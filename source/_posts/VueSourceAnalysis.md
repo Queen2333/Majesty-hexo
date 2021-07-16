@@ -1,5 +1,6 @@
 ---
 title: 前端架构--Vue源码分析
+featured_image: ./images/ironman1.jpg
 ---
 
 #### v-if 和 v-for 的优先级

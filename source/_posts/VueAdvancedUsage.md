@@ -1,5 +1,6 @@
 ---
 title: 前端架构--Vue高级用法
+featured_image: ./images/ironman3.jpg
 ---
 
 #### Vue 中组件之间的通信
