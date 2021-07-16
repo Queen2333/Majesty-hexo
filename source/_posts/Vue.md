@@ -812,10 +812,75 @@ Vue 通过它的编译器将模板编译成渲染函数，在数据发生变化�
 
         <button v-permission="'admin'">
     ```
-## Quick Start
 
-### Create a new post
+---
 
+#### 渲染函数
+
+Vue 推荐在绝大多数情况下使用模板创建 html，但在一些场景下需要用 js 的完全编程能力，此时需要用到渲染函数
+
+```
+  render: function (createElement) {
+    // createElement函数返回的是VNode
+    return {
+      tag, // 标签名称 {String | Object | Function} 或者resolve上述任何一种async函数
+      data, // 传递数据
+      children // 子节点数据
+    }
+  }
+```
+
+例子：
+
+```
+  <heading :level="1" :title="title" icon="cart">{{title}}</heading>
+  <h2 title="">
+    <svg class="icon">
+      <use xlink:href="#icon-cart"></use>
+    </svg>
+  </h2> //插值
+
+  Vue.component('heading', {
+    props: {
+      level: {
+        type: String,
+        required: true
+      },
+      title: {
+        type: String,
+        default: ''
+      },
+      icon: {
+        type: String
+      }
+    }
+    render(h) { // h就是createElement
+      // 子节点数组
+      let children = []
+      // icon属性处理逻辑
+      if (this.icon) {
+        // <svg class="icon"><use xlink="#icon-cart"></use></svg>
+        children.push(h(
+          'svg',
+          {class: 'icon'},
+          [h('use', {attrs: {'xlink:href': '#icon-' + this.icon}})]
+        ))
+      }
+
+      // 拼接子节点
+      children = children.concat(this.$slots.default)
+      // snabbdom
+      const vnode = h( // 必须返回
+        'h' + this.level, // 参数1:tagname
+        {attrs: {title: this.title}}, //参数2: {...}
+        children, //参数3:子节点VNode数组
+      )
+      return vnode
+    }
+  })
+```
+
+<!--
 ```bash
 $ hexo new "My New Post"
 ```
@@ -844,4 +909,4 @@ More info: [Generating](https://hexo.io/docs/generating.html)
 $ hexo deploy
 ```
 
-More info: [Deployment](https://hexo.io/docs/one-command-deployment.html)
+More info: [Deployment](https://hexo.io/docs/one-command-deployment.html) -->
