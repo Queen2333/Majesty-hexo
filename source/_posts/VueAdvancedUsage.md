@@ -531,35 +531,81 @@ Vue 推荐在绝大多数情况下使用模板创建 html，但在一些场景�
 
 ---
 
-####
+#### 混入 mixin
 
-<!--
-```bash
-$ hexo new "My New Post"
-```
+提供了一种非常灵活的方式，来分发 vue 组件中的可复用功能。一个混入对象可以包含任意组件选项。当组件使用混入
+对象时，所有混入对象的选项将被“混合”进入该组件本身的选项（选项合并组件中的值优先级高，生命周期都保留）
 
-More info: [Writing](https://hexo.io/docs/writing.html)
+    ```
+      // 定义一个混入对象
+      var myMixin = {
+        created: function () {
+          this.hello()
+        },
+        methods: {
+          hello: function () {
+            console.log('hello from mixin!')
+          }
+        }
+      }
 
-### Run server
+      Vue.component('comp', {
+        mixins: [myMixin]
+      })
+    ```
 
-```bash
-$ hexo server
-```
+---
 
-More info: [Server](https://hexo.io/docs/server.html)
+#### 插件
 
-### Generate static files
+用于为 Vue 添加全局功能范围如下：
 
-```bash
-$ hexo generate
-```
+    1.添加全局方法或属性，如：vue-custom-element
 
-More info: [Generating](https://hexo.io/docs/generating.html)
+    2.添加全局资源：指令/过滤器/过渡等，如：vue-touch
 
-### Deploy to remote sites
+    3.通过全局混入来添加一些组件选项，如：vue-router
 
-```bash
-$ hexo deploy
-```
+    4.添加Vue实例方法，通过把他们添加到Vue.prototype上实现
 
-More info: [Deployment](https://hexo.io/docs/one-command-deployment.html) -->
+    5.一个库，提供自己的Api，同时提供上面提到的一个或多个功能，如：vue-router
+
+##### 插件声明
+
+    Vue的插件应该暴露一个install方法，这个方法的第一个参数是Vue构造器第二个参数是一个可选的选项对象
+
+    ```
+      MyPlugin.install = function(Vue, options) {
+        // 1.添加全局方法成属性
+        Vue.myGlobalMethod = function () {}
+        // 2.添加全局资源
+        Vue.directive('my-directive', {})
+        // 3.注入组件选项
+        Vue.mixin({
+          created: function() {
+            // ...逻辑
+          }
+        })
+        // 4.添加实例方法
+        Vue.prototype.$myMethod = function (methodOptions) {}
+      }
+
+      eg:
+
+      // 插件需要实现
+      const MyPlugin = {
+        install(Vue, options) {
+          Vye.component('heading', {
+            //
+          })
+        }
+      }
+
+      if(typeof window !== 'undefined' && window.Vue) {
+        //使用插件使用Vue.use()
+        window.Vue.use(MyPlugin)
+      }
+
+      // 引入
+      <script src="./plugins/heading.js"></script>
+    ```
