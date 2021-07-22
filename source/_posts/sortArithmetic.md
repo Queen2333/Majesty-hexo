@@ -201,3 +201,206 @@ featured_image: ./images/ironman2.jpg
         return result;
       }
     ```
+
+---
+
+6.快速排序
+
+快速排序的基本思想：通过一趟排序将待排记录分隔成独立的两部分，其中一部分记录的关键字均比另一部分的关键字小，则可分别对这两部分记录继续进行排序，以达到整个序列有序。
+
+    6.1算法描述
+
+    快速排序使用分治法来把一个串（list）分为两个子串（sub-lists）。具体算法描述如下：
+    从数列中挑出一个元素，称为 “基准”（pivot）；
+    重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可
+    以到任一边）。在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作；
+    递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
+
+    ```
+      function quickSort(arr, left, right) {
+        var len = arr.length,
+          partitionIndex,
+          left = typeof left != 'number'? 0 : left,
+          right = typeof right != 'number'? len - 1 : right;
+
+        if(left < right) {
+          partitionIndex = partition(arr, left, right);
+          quickSort(arr, left, partitionIndex - 1);
+          quickSort(arr, partitionIndex + 1, right);
+        }
+        return arr;
+      }
+
+      function partition(arr, left ,right) {    // 分区操作
+        var pivot = left,                     // 设定基准值（pivot）
+          index = pivot + 1;
+        for(var i = index; i <= right; i++) {
+          if(arr[i] < arr[pivot]) {
+            swap(arr, i, index);
+            index++;
+          }
+        }
+        swap(arr, pivot, index - 1);
+        return index-1;
+      }
+
+      function swap(arr, i, j) {
+        var temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+      }
+    ```
+
+---
+
+7.堆排序
+
+堆排序（Heapsort）是指利用堆这种数据结构所设计的一种排序算法。堆积是一个近似完全二叉树的结构，并同时满足堆积的性质：即子结点的键值或索引总是小于（或者大于）它的父节点。
+
+    7.1算法描述
+
+    将初始待排序关键字序列(R1,R2….Rn)构建成大顶堆，此堆为初始的无序区；
+    将堆顶元素R[1]与最后一个元素R[n]交换，此时得到新的无序区(R1,R2,……Rn-1)和新的有序区(Rn),且满
+    足R[1,2…n-1]<=R[n]；
+    由于交换后新的堆顶R[1]可能违反堆的性质，因此需要对当前无序区(R1,R2,……Rn-1)调整为新堆，然后再次
+    将R[1]与无序区最后一个元素交换，得到新的无序区(R1,R2….Rn-2)和新的有序区(Rn-1,Rn)。不断重复此
+    过程直到有序区的元素个数为n-1，则整个排序过程完成。
+
+    ```
+      var len;   // 因为声明的多个函数都需要数据长度，所以把len设置成为全局变量
+
+      function buildMaxHeap(arr) {  // 建立大顶堆
+        len = arr.length;
+        for(var i = Math.floor(len/2); i >= 0; i--) {
+          heapify(arr, i);
+        }
+      }
+
+      function heapify(arr, i) {    // 堆调整
+        var left = 2 * i + 1,
+          right = 2 * i + 2,
+          largest = i;
+
+        if(left < len && arr[left] > arr[largest]) {
+          largest = left;
+        }
+
+        if(right < len && arr[right] > arr[largest]) {
+          largest = right;
+        }
+
+        if(largest != i) {
+          swap(arr, i, largest);
+          heapify(arr, largest);
+        }
+      }
+
+      function swap(arr, i, j) {
+        var temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+      }
+
+      function heapSort(arr) {
+        buildMaxHeap(arr);
+
+        for(var i = arr.length - 1; i > 0; i--) {
+          swap(arr, 0, i);
+          len--;
+          heapify(arr, 0);
+        }
+        return arr;
+      }
+    ```
+
+---
+
+8.计数排序
+
+计数排序不是基于比较的排序算法，其核心在于将输入的数据值转化为键存储在额外开辟的数组空间中。 作为一种线性时间复杂度的排序，计数排序要求输入的数据必须是有确定范围的整数。
+
+    8.1算法描述
+
+    找出待排序的数组中最大和最小的元素；
+    统计数组中每个值为i的元素出现的次数，存入数组C的第i项；
+    对所有的计数累加（从C中的第一个元素开始，每一项和前一项相加）；
+    反向填充目标数组：将每个元素i放在新数组的第C(i)项，每放一个元素就将C(i)减去1。
+
+    ```
+      function countingSort(arr, maxValue) {
+        var bucket = newArray(maxValue + 1),
+          sortedIndex = 0;
+          arrLen = arr.length,
+          bucketLen = maxValue + 1;
+
+        for(var i = 0; i < arrLen; i++) {
+          if(!bucket[arr[i]]) {
+            bucket[arr[i]] = 0;
+          }
+          bucket[arr[i]]++;
+        }
+
+        for(var j = 0; j < bucketLen; j++) {
+          while(bucket[j] > 0) {
+            arr[sortedIndex++] = j;
+            bucket[j]--;
+          }
+        }
+
+        return arr;
+      }
+    ```
+
+---
+
+9.桶排序
+
+    9.1算法描述
+
+    设置一个定量的数组当作空桶；
+    遍历输入数据，并且把数据一个一个放到对应的桶里去；
+    对每个不是空的桶进行排序；
+    从不是空的桶里把排好序的数据拼接起来。
+
+    ```
+      function bucketSort(arr, bucketSize) {
+        if(arr.length === 0) {
+          return arr;
+        }
+
+        var i;
+        var minValue = arr[0];
+        var maxValue = arr[0];
+        for (i = 1; i < arr.length; i++) {
+          if (arr[i] < minValue) {
+            minValue = arr[i];               // 输入数据的最小值
+          } else if (arr[i] > maxValue) {
+            maxValue = arr[i];               // 输入数据的最大值
+          }
+        }
+
+        // 桶的初始化
+        var DEFAULT_BUCKET_SIZE = 5;           // 设置桶的默认数量为5
+        bucketSize = bucketSize || DEFAULT_BUCKET_SIZE;
+        var bucketCount = Math.floor((maxValue - minValue) / bucketSize) + 1;
+        var buckets = newArray(bucketCount);
+        for(i = 0; i < buckets.length; i++) {
+          buckets[i] = [];
+        }
+
+        // 利用映射函数将数据分配到各个桶中
+        for(i = 0; i < arr.length; i++) {
+          buckets[Math.floor((arr[i] - minValue) / bucketSize)].push(arr[i]);
+        }
+
+        arr.length = 0;
+        for(i = 0; i < buckets.length; i++) {
+          insertionSort(buckets[i]);                     // 对每个桶进行排序，这里使用了插入排序
+          for(var j = 0; j < buckets[i].length; j++) {
+            arr.push(buckets[i][j]);
+          }
+        }
+
+        return arr;
+      }
+    ```
