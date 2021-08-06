@@ -177,3 +177,167 @@ featured_image: ./images/spiderman.jpg
 ```
 
 ---
+
+#### 移除元素 -- 双指针
+
+给你一个数组 nums  和一个值 val，你需要 原地 移除所有数值等于  val  的元素，并返回移除后数组的新长度。
+
+不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
+
+元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+
+```
+  /**
+  * @param {number[]} nums
+  * @param {number} val
+  * @return {number}
+  */
+  var removeElement = function(nums, val) {
+    let n = nums.length
+    let i = 0
+    while (i < n) {
+      if (val === nums[i]) {
+        nums[i] = nums[n - 1]
+        n--
+      } else {
+        i++
+      }
+    }
+    return n
+  };
+```
+
+---
+
+#### 实现 strStr() -- 双指针
+
+实现  strStr()  函数。
+
+给你两个字符串  haystack 和 needle ，请你在 haystack 字符串中找出 needle 字符串出现的第一个位置（下标从 0 开始）。如果不存在，则返回   -1 。
+
+```
+  /**
+  * @param {string} haystack
+  * @param {string} needle
+  * @return {number}
+  */
+  var strStr = function(haystack, needle) {
+    let l = 0, n = 0
+    while (l < haystack.length && n < needle.length) {
+      if (haystack[l + n] === needle[n]) {
+        n++
+      } else {
+        n = 0
+        l++
+      }
+    }
+    return n === needle.length ? l : -1
+  };
+```
+
+---
+
+#### 搜索插入位置 -- 二分法
+
+给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+
+请必须使用时间复杂度为 O(log n) 的算法。
+
+```
+  /**
+  * @param {number[]} nums
+  * @param {number} target
+  * @return {number}
+  */
+  var searchInsert = function(nums, target) {
+    const n = nums.length;
+    let left = 0, right = n - 1, ans = n;
+    while (left <= right) {
+      let mid = ((right - left) / 2) + left;
+      if (target <= nums[mid]) {
+        ans = mid;
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+      }
+    }
+    return ans;
+  };
+```
+
+---
+
+#### 最大子序和 -- 动态规划
+
+给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+```
+  /**
+  * @param {number[]} nums
+  * @return {number}
+  */
+  var maxSubArray = function(nums) {
+    let pre = 0, maxAns = nums[0];
+    nums.forEach((x) => {
+      pre = Math.max(pre + x, x);
+      maxAns = Math.max(maxAns, pre);
+    });
+    return maxAns;
+  };
+```
+
+---
+
+#### 最后一个单词的长度 -- 遍历字符串
+
+给你一个字符串 s，由若干单词组成，单词前后用一些空格字符隔开。返回字符串中最后一个单词的长度。
+
+单词 是指仅由字母组成、不包含任何空格字符的最大子字符串。
+
+```
+  /**
+  * @param {string} s
+  * @return {number}
+  */
+  var lengthOfLastWord = function(s) {
+    let end = s.length - 1
+    while(end >= 0 && s[end] === ' ') end --
+    if (end < 0) return 0
+    let start = end
+    while(start >= 0 && s[start] !== ' ') start --
+    return end - start
+  };
+```
+
+---
+
+#### 加一 -- 数组遍历
+
+给定一个由 整数 组成的 非空 数组所表示的非负整数，在该数的基础上加一。
+
+最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。
+
+你可以假设除了整数 0 之外，这个整数不会以零开头。
+
+```
+  /**
+  * @param {number[]} digits
+  * @return {number[]}
+  */
+  var plusOne = function(digits) {
+    const len = digits.length;
+    for(let i = len - 1; i >= 0; i--) {
+      digits[i]++;
+      digits[i] %= 10;
+      if(digits[i]!=0)
+        return digits;
+    }
+    digits = [...Array(len + 1)].map(_=>0);;
+    digits[0] = 1;
+    return digits;
+  };
+```
+
+---
+
+####
