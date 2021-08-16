@@ -354,16 +354,256 @@ featured_image: ./images/spiderman.jpg
   * @return {number}
   */
   var mySqrt = function(x) {
-    let left = 0, right = x, ans = -1
-    while(left < right) {
-      let mid = (right - 1) / 2 + 1
-      if (mid * mid <= x) {
-          ans = mid
-          left = mid + 1
+    let left = 0, right = x
+    while(left <= right) {
+      let mid = (left + right) >> 1
+      if (mid * mid < x) {
+        left = mid + 1
+      } else if (mid * mid > x) {
+        right = mid - 1
       } else {
-          right = mid - 1
+        return mid
       }
     }
-    return ans
+    return right
   };
 ```
+
+---
+
+#### 爬楼梯
+
+假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+
+每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+注意：给定 n 是一个正整数。
+
+```
+  /**
+  * @param {number} n
+  * @return {number}
+  */
+  var climbStairs = function(n) {
+    let p = 0, q = 0, r = 1
+    for(let i = 0; i < n; i++) {
+      p = q
+      q = r
+      r = p + q
+    }
+    return r
+  };
+```
+
+---
+
+#### 删除排序链表中的重复元素 -- 链表
+
+存在一个按升序排列的链表，给你这个链表的头节点 head ，请你删除所有重复的元素，使每个元素 只出现一次 。
+
+返回同样按升序排列的结果链表。
+
+```
+  /**
+  * Definition for singly-linked list.
+  * function ListNode(val, next) {
+  *     this.val = (val===undefined ? 0 : val)
+  *     this.next = (next===undefined ? null : next)
+  * }
+  */
+  /**
+  * @param {ListNode} head
+  * @return {ListNode}
+  */
+  var deleteDuplicates = function(head) {
+    if (!head) return head
+    let cur = head
+    while (cur.next) {
+      if (cur.val === cur.next.val) {
+        cur.next = cur.next.next
+      } else {
+        cur = cur.next
+      }
+    }
+    return head
+  };
+```
+
+---
+
+#### 合并两个有序数组 -- 双指针
+
+给你两个按 非递减顺序 排列的整数数组  nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数目。
+
+请你 合并 nums2 到 nums1 中，使合并后的数组同样按 非递减顺序 排列。
+
+注意：最终，合并后数组不应由函数返回，而是存储在数组 nums1 中。为了应对这种情况，nums1 的初始长度为 m + n，其中前 m 个元素表示应合并的元素，后 n 个元素为 0 ，应忽略。nums2 的长度为 n 。
+
+```
+  /**
+  * @param {number[]} nums1
+  * @param {number} m
+  * @param {number[]} nums2
+  * @param {number} n
+  * @return {void} Do not return anything, modify nums1 in-place instead.
+  */
+  var merge = function(nums1, m, nums2, n) {
+    const sorted = new Array(m + n).fill(0)
+    let p1 = 0, p2 = 0
+    var cur
+    while(p1 < m || p2 < n) {
+      if (p1 === m) {
+        cur = nums2[p2++]
+      } else if (p2 === n) {
+        cur = nums1[p1++]
+      } else if (nums1[p1] < nums2[p2]) {
+        cur = nums1[p1++]
+      } else {
+        cur = nums2[p2++]
+      }
+      sorted[p1 + p2 - 1] = cur
+    }
+    for (let i = 0; i < m + n; i++) {
+      nums1[i] = sorted[i]
+    }
+  };
+```
+
+---
+
+#### 二叉树的中序遍历 -- 递归
+
+给定一个二叉树的根节点 root ，返回它的 中序 遍历。
+
+二叉树的中序遍历：按照访问左子树——根节点——右子树的方式遍历这棵树，而在访问左子树或者右子树的时候我们按照同样的方式遍历，直到遍历完整棵树。
+
+```
+  /**
+  * Definition for a binary tree node.
+  * function TreeNode(val, left, right) {
+  *     this.val = (val===undefined ? 0 : val)
+  *     this.left = (left===undefined ? null : left)
+  *     this.right = (right===undefined ? null : right)
+  * }
+  */
+  /**
+  * @param {TreeNode} root
+  * @return {number[]}
+  */
+  var inorderTraversal = function(root) {
+    let result = []
+    this.middleOrder = (root) => {
+      if (!root) return
+      middleOrder(root.left)
+      result.push(root.val)
+      middleOrder(root.right)
+    }
+    middleOrder(root)
+    return result
+  };
+```
+
+---
+
+#### 二叉树的前序遍历 -- 递归
+
+给你二叉树的根节点 root ，返回它节点值的 前序 遍历。
+
+二叉树的前序遍历：按照访问根节点——左子树——右子树的方式遍历这棵树，而在访问左子树或者右子树的时候，我们按照同样的方式遍历，直到遍历完整棵树。
+
+```
+  /**
+  * Definition for a binary tree node.
+  * function TreeNode(val, left, right) {
+  *     this.val = (val===undefined ? 0 : val)
+  *     this.left = (left===undefined ? null : left)
+  *     this.right = (right===undefined ? null : right)
+  * }
+  */
+  /**
+  * @param {TreeNode} root
+  * @return {number[]}
+  */
+  var preorderTraversal = function(root) {
+    let result = []
+    this.preOrder = (root) => {
+      if (root === null) return
+      result.push(root.val)
+      preOrder(root.left)
+      preOrder(root.right)
+    }
+    preOrder(root)
+    return result
+  };
+```
+
+---
+
+#### 二叉树的后序遍历 -- 递归
+
+给定一个二叉树，返回它的 后序 遍历。
+
+二叉树的后序遍历：按照访问左子树——右子树——根节点的方式遍历这棵树，而在访问左子树或者右子树的时候，我们按照同样的方式遍历，直到遍历完整棵树。
+
+```
+  /**
+  * Definition for a binary tree node.
+  * function TreeNode(val, left, right) {
+  *     this.val = (val===undefined ? 0 : val)
+  *     this.left = (left===undefined ? null : left)
+  *     this.right = (right===undefined ? null : right)
+  * }
+  */
+  /**
+  * @param {TreeNode} root
+  * @return {number[]}
+  */
+  var postorderTraversal = function(root) {
+    let result = []
+    this.lastOrder = (root) => {
+      if (root === null) return
+      lastOrder(root.left)
+      lastOrder(root.right)
+      result.push(root.val)
+    }
+    lastOrder(root)
+    return result
+  };
+```
+
+---
+
+#### 相同的树 -- 递归(深度优先遍历)
+
+给你两棵二叉树的根节点 p 和 q ，编写一个函数来检验这两棵树是否相同。
+
+如果两个树在结构上相同，并且节点具有相同的值，则认为它们是相同的。
+
+```
+  /**
+  * Definition for a binary tree node.
+  * function TreeNode(val, left, right) {
+  *     this.val = (val===undefined ? 0 : val)
+  *     this.left = (left===undefined ? null : left)
+  *     this.right = (right===undefined ? null : right)
+  * }
+  */
+  /**
+  * @param {TreeNode} p
+  * @param {TreeNode} q
+  * @return {boolean}
+  */
+  var isSameTree = function(p, q) {
+    if (p === null && q === null) {
+      return true
+    } else if (p === null || q === null) {
+      return false
+    } else if (p.val !== q.val) {
+      return false
+    } else {
+      return isSameTree(p.left, q.left) && isSameTree(p.right, q.right)
+    }
+  };
+```
+
+---
