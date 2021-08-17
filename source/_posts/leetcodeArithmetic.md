@@ -607,3 +607,96 @@ featured_image: ./images/spiderman.jpg
 ```
 
 ---
+
+#### 对称二叉树 -- 递归
+
+给定一个二叉树，检查它是否是镜像对称的。
+
+```
+  /**
+  * Definition for a binary tree node.
+  * function TreeNode(val, left, right) {
+  *     this.val = (val===undefined ? 0 : val)
+  *     this.left = (left===undefined ? null : left)
+  *     this.right = (right===undefined ? null : right)
+  * }
+  */
+  /**
+  * @param {TreeNode} root
+  * @return {boolean}
+  */
+  var isSymmetric = function(root) {
+    return check(root, root)
+  };
+  const check = (p, q) => {
+    if (!p && !q) return true
+    if (!p || !q) return false
+    return p.val === q.val && check(p.left, q.right) && check(p.right, q.left)
+  }
+```
+
+---
+
+#### 二叉树的最大深度 -- 递归
+
+给定一个二叉树，找出其最大深度。
+
+二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+
+说明: 叶子节点是指没有子节点的节点。
+
+```
+  /**
+  * Definition for a binary tree node.
+  * function TreeNode(val, left, right) {
+  *     this.val = (val===undefined ? 0 : val)
+  *     this.left = (left===undefined ? null : left)
+  *     this.right = (right===undefined ? null : right)
+  * }
+  */
+  /**
+  * @param {TreeNode} root
+  * @return {number}
+  */
+  var maxDepth = function(root) {
+    if (!root) {
+      return 0
+    } else {
+      let left = maxDepth(root.left)
+      let right = maxDepth(root.right)
+      return Math.max(left, right) + 1
+    }
+  };
+```
+
+---
+
+#### 将有序数组转换为二叉搜索树 -- 递归，二分法
+
+给你一个整数数组 nums ，其中元素已经按 升序 排列，请你将其转换为一棵 高度平衡 二叉搜索树。
+
+高度平衡 二叉树是一棵满足「每个节点的左右两个子树的高度差的绝对值不超过 1 」的二叉树。
+
+```
+  /**
+  * Definition for a binary tree node.
+  * function TreeNode(val, left, right) {
+  *     this.val = (val===undefined ? 0 : val)
+  *     this.left = (left===undefined ? null : left)
+  *     this.right = (right===undefined ? null : right)
+  * }
+  */
+  /**
+  * @param {number[]} nums
+  * @return {TreeNode}
+  */
+  var sortedArrayToBST = function (nums) {
+    if (!nums.length) return null;
+    const mid = nums.length >>> 1;
+    let cur = new TreeNode(nums[mid]);
+    cur.left = sortedArrayToBST(nums.slice(0, mid));
+    cur.right = sortedArrayToBST(nums.slice(mid+1));
+    return cur;
+  };
+
+```
