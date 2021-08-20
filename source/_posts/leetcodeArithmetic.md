@@ -637,6 +637,37 @@ featured_image: ./images/spiderman.jpg
 
 ---
 
+#### 二叉树的最小深度 -- 递归
+
+给定一个二叉树，找出其最小深度。
+
+最小深度是从根节点到最近叶子节点的最短路径上的节点数量。
+
+说明：叶子节点是指没有子节点的节点。
+
+```
+  /**
+  * Definition for a binary tree node.
+  * function TreeNode(val, left, right) {
+  *     this.val = (val===undefined ? 0 : val)
+  *     this.left = (left===undefined ? null : left)
+  *     this.right = (right===undefined ? null : right)
+  * }
+  */
+  /**
+  * @param {TreeNode} root
+  * @return {number}
+  */
+  var minDepth = function(root) {
+    if (!root) return 0
+    if (!root.left) return minDepth(root.right) + 1
+    if (!root.right) return minDepth(root.left) + 1
+    return (Math.min(minDepth(root.left), minDepth(root.right))) + 1
+  };
+```
+
+---
+
 #### 二叉树的最大深度 -- 递归
 
 给定一个二叉树，找出其最大深度。
@@ -700,3 +731,28 @@ featured_image: ./images/spiderman.jpg
   };
 
 ```
+
+---
+
+#### 平衡二叉树 -- 递归
+
+给定一个二叉树，判断它是否是高度平衡的二叉树。
+
+本题中，一棵高度平衡二叉树定义为：
+
+一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
+
+```
+  var isBalanced = function (root) {
+  if(!root) return true
+  return Math.abs(depth(root.left) - depth(root.right)) <= 1
+    && isBalanced(root.left)
+    && isBalanced(root.right)
+  }
+  var depth = function (node) {
+    if(!node) return -1
+    return 1 + Math.max(depth(node.left), depth(node.right))
+  }
+```
+
+---
