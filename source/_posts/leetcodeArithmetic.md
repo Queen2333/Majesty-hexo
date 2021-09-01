@@ -756,3 +756,56 @@ featured_image: ./images/spiderman.jpg
 ```
 
 ---
+
+#### 路径总和 -- 递归
+
+给你二叉树的根节点  root 和一个表示目标和的整数  targetSum ，判断该树中是否存在 根节点到叶子节点 的路径，这条路径上所有节点值相加等于目标和  targetSum 。
+
+叶子节点 是指没有子节点的节点。
+
+```
+  /**
+  * Definition for a binary tree node.
+  * function TreeNode(val, left, right) {
+  *     this.val = (val===undefined ? 0 : val)
+  *     this.left = (left===undefined ? null : left)
+  *     this.right = (right===undefined ? null : right)
+  * }
+  */
+  /**
+  * @param {TreeNode} root
+  * @param {number} targetSum
+  * @return {boolean}
+  */
+  var hasPathSum = function(root, targetSum) {
+    if (!root) return false
+    if (!root.left && !root.right) return root.val === targetSum
+    return hasPathSum(root.left, targetSum - root.val) || hasPathSum(root.right,   targetSum - root.val)
+  };
+```
+
+---
+
+#### 杨辉三角 -- 数学
+
+给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行。
+
+在「杨辉三角」中，每个数是它左上方和右上方的数的和。
+
+```
+  /**
+  * @param {number} numRows
+  * @return {number[][]}
+  */
+  var generate = function(numRows) {
+    let ret = []
+    for(let i = 0; i < numRows; i++) {
+      const row = new Array(i + 1).fill(1)
+      for (let j = 1; j < row.length - 1; j++) {
+        row[j] = ret[i - 1][j - 1] + ret[i - 1][j]
+      }
+      ret.push(row)
+    }
+    return ret
+  };
+```
