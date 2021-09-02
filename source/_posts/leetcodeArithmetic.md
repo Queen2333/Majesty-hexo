@@ -809,3 +809,87 @@ featured_image: ./images/spiderman.jpg
     return ret
   };
 ```
+
+---
+
+#### 买卖股票的最佳时机 -- 遍历
+
+给定一个数组 prices ，它的第  i 个元素  prices[i] 表示一支给定股票第 i 天的价格。
+
+你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+
+返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+
+```
+  /**
+  * @param {number[]} prices
+  * @return {number}
+  */
+  var maxProfit = function(prices) {
+    let res = 0
+    let buy = Number.MAX_VALUE
+    for (let price of prices) {
+      buy = Math.min(buy, price)
+      res = Math.max(res, price - buy)
+    }
+    return res
+  };
+```
+
+---
+
+#### 验证回文串 -- 双指针
+
+给定一个字符串，验证它是否是回文串，只考虑字母和数字字符，可以忽略字母的大小写。
+
+说明：本题中，我们将空字符串定义为有效的回文串
+
+```
+  /**
+  * @param {string} s
+  * @return {boolean}
+  */
+  var isPalindrome = function(s) {
+    s = s.toLowerCase();
+    const reg = /^[0-9a-z]*$/;
+    let left = 0
+    let right = s.length - 1
+    while(left < right) {
+      if (!reg.test(s[left])) {
+        left++
+        continue
+      }
+      if (!reg.test(s[right])) {
+        right--
+        continue
+      }
+      if (s[left] === s[right]) {
+        left++
+        right--
+      } else {
+        return false
+      }
+    }
+    return true
+  };
+```
+
+---
+
+#### 只出现一次的数字 -- 位运算
+
+给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+
+```
+  /**
+  * @param {number[]} nums
+  * @return {number}
+  */
+  var singleNumber = function(nums) {
+    let a = 0
+    for (const item of nums) {
+      a ^= item
+    }
+    return a
+  };
+```
