@@ -33,6 +33,55 @@ featured_image: ./images/spiderman.jpg
 
 ---
 
+#### 两数之和 II - 输入有序数组 -- 哈希/二分法/双指针
+
+给定一个已按照 非递减顺序排列   的整数数组  numbers ，请你从数组中找出两个数满足相加之和等于目标数  target 。
+
+函数应该以长度为 2 的整数数组的形式返回这两个数的下标值。numbers 的下标 从 1 开始计数 ，所以答案数组应当满足 1 <= answer[0] < answer[1] <= numbers.length 。
+
+你可以假设每个输入 只对应唯一的答案 ，而且你 不可以 重复使用相同的元素。
+
+```
+  /**
+  * @param {number[]} numbers
+  * @param {number} target
+  * @return {number[]}
+  */
+  var twoSum = function(numbers, target) {
+    let list = new Map()
+    for (let i = 0;i < numbers.length; i++) {
+      let cur = target - numbers[i]
+      if (list.has(cur)) {
+        return [list.get(cur) + 1, i + 1]
+      }
+      list.set(numbers[i], i)
+    }
+  };
+```
+
+```
+  /**
+  * @param {number[]} numbers
+  * @param {number} target
+  * @return {number[]}
+  */
+  var twoSum = function(numbers, target) {
+    let left = 0
+    let right = numbers.length - 1
+    while(left < right) {
+      if (numbers[left] + numbers[right] === target) {
+        return [left + 1, right + 1]
+      } else if (numbers[left] + numbers[right] > target) {
+        right --
+      } else {
+        left ++
+      }
+    }
+  };
+```
+
+---
+
 #### 最长公共前缀 -- 链表
 
 编写一个函数来查找字符串数组中的最长公共前缀。
@@ -953,3 +1002,99 @@ featured_image: ./images/spiderman.jpg
     return false
   };
 ```
+
+---
+
+#### 相交链表 -- 双指针
+
+给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表没有交点，返回 null 。
+
+```
+  /**
+  * Definition for singly-linked list.
+  * function ListNode(val) {
+  *     this.val = val;
+  *     this.next = null;
+  * }
+  */
+
+  /**
+  * @param {ListNode} headA
+  * @param {ListNode} headB
+  * @return {ListNode}
+  */
+  var getIntersectionNode = function(headA, headB) {
+    if(headA === null || headB === null) return null
+    let pA = headA, pB = headB
+    while(pA !== pB) {
+      pA = pA === null ? headB : pA.next
+      pB = pB === null ? headA : pB.next
+    }
+    return pA
+  };
+```
+
+---
+
+#### 多数元素 -- 哈希/排序
+
+给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数 大于  ⌊ n/2 ⌋  的元素。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+```
+  /**
+  * @param {number[]} nums
+  * @return {number}
+  */
+  var majorityElement = function(nums) {
+    const n = nums.length;
+    const map = new Map();
+
+    for (let i = 0; i < n; i++) {
+      map.set(nums[i], map.has(nums[i]) ? map.get(nums[i]) + 1 : 1);
+    }
+
+    for (let [key, val] of map) {
+      if (val > n / 2) {
+        return key;
+      }
+    }
+  };
+
+```
+
+```
+  /**
+  * @param {number[]} nums
+  * @return {number}
+  */
+  var majorityElement = function(nums) {
+    nums.sort()
+    return nums[parseInt(nums.length / 2)]
+  };
+
+```
+
+---
+
+#### 阶乘后的零
+
+给定一个整数 n ，返回 n! 结果中尾随零的数量。
+
+```
+  /**
+  * @param {number} n
+  * @return {number}
+  */
+  var trailingZeroes = function(n) {
+    let r = 0
+    while(n > 1) {
+      n = parseInt(n / 5)
+      r += n
+    }
+    return r
+  };
+```
+
+---
