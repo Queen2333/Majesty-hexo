@@ -1,5 +1,5 @@
 ---
-title: 力扣刷题总结
+title: 力扣刷题总结（入门级）
 featured_image: ./images/spiderman.jpg
 ---
 
