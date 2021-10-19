@@ -58,3 +58,41 @@ setState 如何链式更新
 ```
 
 ---
+
+#### react 生命周期
+
+废弃掉的生命周期 :( componentWillMount ， componentWillReceiveProps ， componentWillUpdate)
+
+新的生命周期（16.4 之后）:
+
+Mounting:
+
+Constructor()
+
+static getDerivedStateFromProps(props, state):在 render 前调用，并且在初始挂载及后续更新时都会被调用。他应该返回一个对象来更新 state，如果返回 null 则不更新任何内容。
+
+render()
+
+componentDidMount():  组件装载之后调用，此时我们可以获取到 DOM 节点并操作，比如 对 canvas，svg 的操作，服务器请求，订阅都可以写在这个里面，但是记得在 componentWillUnmount 中取消订阅
+
+Updating:
+
+static getDerivedStateFromProps(props, state)
+
+shouldComponentUpdate(nextProps, nextState):有两个参数 nextProps 和 nextState，表示 新的属性和变化之后的 state，返回一个布尔值，true 表示会触发重新渲染，false 表示不会 触发重新渲染，默认返回 true,我们通常利用此生命周期来优化 React 程序性能
+
+render()
+
+getSnapshotBeforeUpdate(prevProps, prevState) :  这个方法在 render 之后 ， componentDidUpdate 之前调用。在最近一次渲染输出（提交到 DOM 节点）之前调用，它使得组件能在发生更改之前从 DOM 中捕获一些信息（例如滚动位置）。有两个参数 prevProps 和 prevState，表示之前的属性和之前的 state，这个函数有一个返回值，会作为第三个参数传给 componentDidUpdate，如果你不想要返回值，可以返回 null，此生命周期必须与 componentDidUpdate 搭配使用
+
+componentDidUpdate(prevProps，prevState，snapshot):  该方法在 getSnapshotBeforeUpdate 方法之后被调用，有三个参数 prevProps，prevState，snapshot，表示之前的 props，之前的 state，和 snapshot。第三个 参数是 getSnapshotBeforeUpdate 返回的,如果触发某些回调函数时需要用到 DOM 元素的 状态，则将对比或计算的过程迁移至 getSnapshotBeforeUpdate，然后在 componentDidUpdate 中统一触发回调或更新状态。
+
+Umounting:
+
+componentWillUnmount():  当我们的组件被卸载或者销毁了就会调用，我们可以在这个函数 里去清除一些定时器，取消网络请求，清理无效的 DOM 元素等垃圾清理工作
+
+Error Handing:
+
+componentDidCatch(error, info)
+
+---
