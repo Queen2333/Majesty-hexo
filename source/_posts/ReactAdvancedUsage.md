@@ -40,3 +40,72 @@ location 匹配时才会渲染
     <Route component={EmptyPage}></Route> // 404路由
   </Switch>
 ```
+
+---
+
+#### Hook
+
+hook 的基本操作
+
+```
+  import React, { uaeState, useEffect } from "react";
+
+  export default function HookPage(props) {
+    // 定义一个叫count的state变量，初始化为0
+    const {count, setCount} = useState(0)
+
+    return (
+      <div>
+        <h3>HookPage</h3>
+        <p>{count}</p>
+        <button onClick={()=>setCount(count + 1)}>add</button>
+      </div>
+    )
+  }
+```
+
+Effect Hook
+
+可在函数组件中执行副作用操作
+
+1.数据获取（ajax）
+
+2.设置订阅以及手动更改 React 组件中的 Dom
+
+```
+  import React, { uaeState, useEffect } from "react";
+
+  export default function HookPage(props) {
+    // 定义一个叫count的state变量，初始化为0
+    const [count, setCount] = useState(0)
+    const [date, setDate] = useState(new Date())
+    //和didMount、didUpdate类似
+
+    //条件执行
+    useEffect(() => {
+      // 只需要在count发生改变的时候执行
+      document.title = `点击了${count}次`
+    }, [count])
+
+    useEffect(() => {
+      // 只需要在didMount的时候执行
+      const timer = setInterval(() => {
+        setData(new Date())
+      }, 1000)
+
+      // 清除定时器，类似willUnmount
+      return () => clearInterval(timer)
+
+    }, [])
+    return (
+      <div>
+        <h3>HookPage</h3>
+        <p>{count}</p>
+        <button onClick={()=>setCount(count + 1)}>add</button>
+        <p>{date.toLocaleTimeString()}</p>
+      </div>
+    )
+  }
+```
+
+---
