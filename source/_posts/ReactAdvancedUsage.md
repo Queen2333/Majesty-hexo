@@ -109,3 +109,119 @@ Effect Hook
 ```
 
 ---
+
+#### 自定义 Hook 和 使用规则
+
+实现组件的状态逻辑共用
+
+```
+// 自定义一个hook命名要以use开头,
+  return (
+    <div>
+      <h3>HookPage</h3>
+      <p>{count}</p>
+      <button onClick={()=>setCount(count + 1)}>add</button>
+      <p>{useClock().toLocaleTimeString()}</p>
+    </div>
+  )
+
+  function useClock() {
+    const [date, setDate] = useState(new Date())
+    useEffect(() => {
+      // 只需要在didMount的时候执行
+      const timer = setInterval(() => {
+        setData(new Date())
+      }, 1000)
+
+      // 清除定时器，类似willUnmount
+      return () => clearInterval(timer)
+
+    }, [])
+    return date
+  }
+```
+
+使用 Hook 的额外规则：
+
+    1.只能在函数最外层调用hook，不要在循环、条件判断或者子函数中调用
+
+    2.只能在React的函数组件中调用Hook。不要在其他js函数中调用（在自定义Hook中可以调用）
+
+---
+
+#### Hook 的 api
+
+##### useMemo
+
+把创建函数和依赖项数组作为参数传入 useMemo，它仅会在某个依赖改变时才重新计算 memoized 的值。
+
+```
+import React, { uaeState, useEffect, useMemo } from "react";
+
+export default function useMemoPage(props) {
+  const [count, setCount] = useState(0)
+
+  const expensive = useMemo(() => {
+    let sum = 0
+    for(let i = 0; i < count; i++) {
+      sum += i
+    }
+    return sum
+    // 只有count改变时，当前函数才会重新执行
+  }, [count])
+  const [value, setValue] = useState('')
+
+  return (
+    <div>
+      <h3>useMemoPage</h3>
+      <p>{count}</p>
+      <p>expensive: {expensive()}</p>
+      <button onClick={()=>setCount(count + 1)}>add</button>
+      <input value={value} onChange={event=>setValue(event.target.value)}/>
+    </div>
+  )
+}
+```
+
+##### useCallback
+
+```
+import React, { uaeState, useEffect, PureComponent } from "react";
+
+export default function useCallbackPage(props) {
+  const [count, setCount] = useState(0)
+
+  const addClick = () => {
+    let sum = 0
+    for(let i = 0; i < count; i++) {
+      sum += i
+    }
+    return sum
+  }
+  const [value, setValue] = useState('')
+
+  return (
+    <div>
+      <h3>useCallbackPage</h3>
+      <p>{count}</p>
+      <p>expensive: {expensive()}</p>
+      <button onClick={()=>setCount(count + 1)}>add</button>
+      <input value={value} onChange={event=>setValue(event.target.value)}/>
+      <Child addClick={addClick}/>
+    </div>
+  )
+}
+
+class Child extends PureComponent {
+  render() {
+    const {addClick} = this.props
+    return (
+      <div>
+        <h3>Child</h3>
+        <button onClick={()=>console.log(addClick())}>add</button>
+      </div>
+    )
+  }
+}
+
+```
