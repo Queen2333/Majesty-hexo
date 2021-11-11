@@ -96,3 +96,32 @@ Error Handing:
 componentDidCatch(error, info)
 
 ---
+
+#### React 中的 key 是什么，有什么作用
+
+```
+  return (
+    <div>
+      <button onClick={changeCount}>{count}</button>
+      {
+        arr.map(item => {
+          return (
+            <p className="border" key={item}>{item}</p>
+          )
+        })
+      }
+    </div>
+  )
+```
+
+作用
+
+1.源码中 ReactChildFiber.js 文件中的 reconcileSingleElement 方法协调，比较老的 key 和最新的 key 是否相等，
+
+再比较 type 是否相等，都相同则判定为同一元素，则复用原来的元素，否则重新创建（createFiberFromFragment）。
+
+2.fiber 都为链表，如数组形式进行对比，upDateSlot 中同上，和 type 一起标识唯一性来更新节点。
+
+3.fiber 拿子元素只能拿到第一个，如果进行两个数组对比，react 的 diff 算法中提供了 mapRemainingChildren 方法，
+
+用 key 和 fiber 当作此方法的 key，value，把链表结构变成了 map 图，获取节点直接用 key 通过 get 就能得到，删除同理。

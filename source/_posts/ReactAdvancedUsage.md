@@ -185,19 +185,22 @@ export default function useMemoPage(props) {
 
 ##### useCallback
 
+把内联回调函数以及依赖项数组作为参数传入 useCallback，它将返回该回调函数的 memoized 版本，该回调函数仅在某依赖项改变时才会更新。
+当你把回调函数传递给经过优化的并使用引用相等性去避免非必要渲染（如 shouldComponentUpdate）的子组件时非常有用。
+
 ```
 import React, { uaeState, useEffect, PureComponent } from "react";
 
 export default function useCallbackPage(props) {
   const [count, setCount] = useState(0)
 
-  const addClick = () => {
+  const addClick = useCallback(() => {
     let sum = 0
     for(let i = 0; i < count; i++) {
       sum += i
     }
     return sum
-  }
+  }, [count])
   const [value, setValue] = useState('')
 
   return (
