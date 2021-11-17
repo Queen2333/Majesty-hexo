@@ -125,3 +125,5 @@ componentDidCatch(error, info)
 3.fiber 拿子元素只能拿到第一个，如果进行两个数组对比，react 的 diff 算法中提供了 mapRemainingChildren 方法，
 
 用 key 和 fiber 当作此方法的 key，value，把链表结构变成了 map 图，获取节点直接用 key 通过 get 就能得到，删除同理。
+
+---

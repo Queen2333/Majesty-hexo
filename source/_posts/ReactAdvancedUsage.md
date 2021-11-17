@@ -228,3 +228,15 @@ class Child extends PureComponent {
 }
 
 ```
+
+---
+
+#### refs 使用方式
+
+1.createRef()挂到原生 dom 节点或者 class 组件
+
+2.function 组件使用 ref 需要用 forwardRef()实现转发操作
+
+3.ref 可以是 callback 形式（尽量不使用内联函数）
+
+4.string 方式（过时，不建议使用）
