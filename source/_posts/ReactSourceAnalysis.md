@@ -67,7 +67,12 @@ setState 如何链式更新
 
 Mounting:
 
-Constructor()
+Constructor()：
+
+    源码中ReactFiberBeginWork.js中，updateClassComponent()函数，最终返回一个nextUnitOfWork，也就是获取下一个执行的单元，在此之前先执行当前的单元。
+    updateClassComponent()接受的参数中，Component就是当前类。函数中，拿到当前instance后（在workInProgress.stateNode）,stateNode第一次渲染时也就
+    是挂载阶段为null，即进入构造阶段constructClassInstance（在ReactFiberClassComponent.js）。此方法接受三个参数，函数中获取当前instance，也就是
+    new ctor(props, context)。
 
 static getDerivedStateFromProps(props, state):在 render 前调用，并且在初始挂载及后续更新时都会被调用。他应该返回一个对象来更新 state，如果返回 null 则不更新任何内容。
 
