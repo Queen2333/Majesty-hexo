@@ -156,3 +156,65 @@ componentDidCatch(error, info)
 用 key 和 fiber 当作此方法的 key，value，把链表结构变成了 map 图，获取节点直接用 key 通过 get 就能得到，删除同理。
 
 ---
+
+#### Virtual DOM 内核
+
+##### Shadow DOM 和 Virtual DOM 是一回事吗？
+
+    Shadow DOM是一种浏览器技术，主要用于在web组件中封装变量和CSS。
+
+    Virtual DOM则是一种由js类库基于浏览器API实现的概念。
+
+##### 什么是 React Fiber
+
+    Fiber是React16中新的协调引擎。它的主要目的是使Vitural DOM可以进行增量式渲染
+
+##### waht
+
+    用 JavaScript 对象表示 DOM 信息和结构，当状态变更时候，重新渲染这个 JavaScript 的对象结构。这个
+    JavaScript对象称为virtual dom;
+
+##### why
+
+    DOM操作很慢，轻微的操作都可能导致⻚⾯重新排版，⾮常耗性能。相对于DOM对象，js对象处理起来更快， ⽽而且更简单。
+    通过diff算法对⽐比新旧vdom之间的差异，可以批量的、最⼩化的执行dom操作，从⽽提⾼性能。
+
+##### where
+
+    react中⽤用JSX语法描述视图，通过babel-loader转译 后它们变为React.createElement(...)形式，该函数将⽣生成 vdom来描述
+    真实dom。将来如果状态变化，vdom将作出相 应变化，再通过diff算法对⽐新⽼vdom区别从⽽做出最终dom操作。
+
+---
+
+#### jsx
+
+    原理:
+
+      babel-loader会预编译JSX为React.createElement(...)
+
+    与vue的异同:
+
+    react中虚拟dom+jsx的设计⼀一开始就有，vue则是演进 过程中才出现的 jsx本来就是js扩展，转义过程简单直接的多;vue把 template编
+    译为render函数的过程需要复杂的编译器器 转换字符串串-ast-js函数字符串串
+
+---
+
+#### 合成事件
+
+    1.事件委托：把所有事件注册到外层
+
+    2.映射表： 根据映射表搜索当前事件，判断是否为合成事件，再处理。ReactDOMComponent.js中的registrationNameModules）
+
+    生成映射表流程分析：
+
+    ReactDOMComponent.js中引入的ReactDOMClientInjection即事件注入的地方，injectEventPluginOrder(DOMEventPluginOrder)
+    规定插件顺序，setComponentTree传入函数。injectEventPluginsByName管理五种事件注入。把所有事件注册到一个大的对象中，这里的对象
+    也就是前面五种事件的其中一种，根据不同分类进行注册。根据这个大的对象找到对应key，最后派发找到event，event接收到的参数包含target,
+    也就是派发对象。
+
+    injectEventPluginsByName执行会触发recomputePluginOrdering，最后执行publishEventForPlugin。在publishEventForPlugin中，
+    执行了publishRegistrationName，最终在此事件中赋值给了registrationNameModules，形成映射表。
+
+    事件的注册：
+
+    legacyListenToEvent执行，层层调用，最终到达addTrappedEventListener，完成了事件的注册

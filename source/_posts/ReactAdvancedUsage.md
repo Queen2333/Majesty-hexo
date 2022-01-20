@@ -242,3 +242,22 @@ class Child extends PureComponent {
 4.string 方式（过时，不建议使用）
 
 ---
+
+#### react 核心 api
+
+    webpack+babel编译时，替换JSX为 React.createElement(type,props,...children)，实际上，转换过程需要经过⼀一个diff过程，
+    ⽐比对出实际更更 新补丁操作dom
+
+    React.createElement: 创建虚拟DOM，执行结束后得到一个JS对象即 vdom，它能够完整描述dom结构
+
+    React.Component: 实现自定义组件
+
+    ReactDOM.render: 渲染真实DOM
+
+      ReactDOM.render(element, container[, callback])：当首次调用时，容器节点里的所有 DOM 元素都会被替换， 后续的
+      调用则会使用 React 的 DOM 差分算法(DOM diffing algorithm)进⾏⾼效的更新。如果提供了可选的回调函数，该回调将
+      在组件被渲染或更新之后被执行。
+
+      ReactDOM.render(vdom,container)可以将vdom转换为 dom并追加到container中
+
+---
