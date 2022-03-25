@@ -19,7 +19,13 @@ featured_image: ./images/ironman3.jpg
 
 5.$attrs/$listeners/$root
 
+    https://blog.csdn.net/Kratial/article/details/108825249
+
+    https://blog.csdn.net/qdcainiao/article/details/119741534
+
 6.provide/inject
+
+    https://blog.csdn.net/yw00yw/article/details/107341934
 
 分三类
 
@@ -168,6 +174,21 @@ export default {
 ```
 
 12.SSR
+
+    SSR是服务端渲染：在后台将vue实例渲染为HTML字符串直接返回，在前端激活为交互程序。
+
+    实现原理：
+
+    客户端发送请求给服务器
+    服务器查询数据库，使用视图、模板引擎等拼接成html字符串，返回给客户端
+    客户端渲染html
+    优点：
+
+    网页内容在服务器端渲染完成，一次性传输到浏览器，所以首屏加载速度非常快
+    有利于SEO，因为服务器返回的是一个完整的html，在浏览器可以看到完整的dom，对于爬虫、百度搜索等引擎就比较友好
+    缺点：
+
+    在后续跳转其它链接时，整个页面还要重复这样的操作，不断地请求响应、请求响应，相对来说，消耗的带宽资源、后续请求的时间就多了，对服务器造成过多负担。
 
 ---
 

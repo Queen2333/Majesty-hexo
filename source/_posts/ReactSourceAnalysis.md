@@ -76,6 +76,8 @@ Constructor()：
 
 static getDerivedStateFromProps(props, state):
 
+    https://www.jianshu.com/p/50fe3fb9f7c3
+
     在 render 前调用，并且在初始挂载及后续更新时都会被调用。static属性，函数是无法被函数实例化的instance获取到。通过ctor获得getDerivedStateFromProps，
     判断是否为function。首先获取原先的state，即prevState，存在memorizedState中。partialState和prevState进行合并。他应该返回一个对象来更新 state，
     如果返回 null则不更新任何内容。
@@ -123,6 +125,22 @@ componentWillUnmount():
 Error Handing:
 
 componentDidCatch(error, info)
+
+---
+
+#### vue 和 react 的 diff 算法比较
+
+相同点：
+Vue 和 react 的 diff 算法，都是不进行跨层级比较，只做同级比较。
+
+不同点：
+
+    1.Vue 进行 diff 时，调用 patch 打补丁函数，一边比较一边给真实的 DOM 打补丁
+    2.Vue 对比节点，当节点元素类型相同，但是 className 不同时，认为是不同类型的元素，删除重新创建，而 react 则认为是同类型节点，进行修改操作
+    3.
+      ① Vue 的列表比对，采用从两端到中间的方式，旧集合和新集合两端各存在两个指针，两两进行比较，如果匹配上了就按照新集合去调整旧集合，每次对比结束后，指针向队列中间移动；
+      ② 而 react 则是从左往右依次对比，利用元素的 index 和标识 lastIndex 进行比较，如果满足 index < lastIndex 就移动元素，删除和添加则各自按照规则调整；
+      ③ 当一个集合把最后一个节点移动到最前面，react 会把前面的节点依次向后移动，而 Vue 只会把最后一个节点放在最前面，这样的操作来看，Vue 的 diff 性能是高于 react 的
 
 ---
 
