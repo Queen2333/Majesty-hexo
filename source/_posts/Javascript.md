@@ -93,6 +93,8 @@ bind()方法在这里再多说一下，bind 的时候传的参数会预先传给
 
 #### 原型和原型链
 
+https://github.com/mqyqingfeng/Blog/issues/2
+
 每个对象都会在其内部初始化一个属性，就是 prototype(原型)，当我们访问一个对象的属性时，如果这个对象内部不存在这个属性，那么他就会去 prototype 里找这个属性，这个 prototype 又会有自己的 prototype，于是就这样一直找下去，也就是我们平时所说的原型链的概念。
 
 关系：instance.constructor.prototype = instance.proto
