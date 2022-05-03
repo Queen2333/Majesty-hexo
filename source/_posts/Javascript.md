@@ -1,5 +1,5 @@
 ---
-title: js用法相关
+title: js面试知识点综合
 featured_image: ./images/blackwidow.jpg
 ---
 
@@ -173,33 +173,6 @@ w3c 的方法是 e.stopPropagation()，IE 则是使用 e.cancelBubble = true。
 
 ![ajax4](/images/ajax4.png)
 ![ajax5](/images/ajax5.png)
-
----
-
-
-#### 如何理解 this
-
-this 的指向
-this 表示当前对象，this 的指向是根据调用的上下文来决定的，默认指向 window 对象，指向 window 对象时可以省略不写，例如：
-
-```
-  this.alert() <=> window.alert()<=> alert();
-```
-
-调用的上下文环境包括全局和局部
-
-总结：
-
-全局环境始终指向 window
-
-局部环境：
-
-    1.在全局作用域下直接调用函数，this指向window
-    2.对象函数调用，哪个对象调用就指向哪个对象
-    3.使用new实例化对象，在构造函数中的this指向实例化对象
-    4.使用call或play改变this的指向
-
-作用：用于区分全局变量和局部变量
 
 ---
 

@@ -12,6 +12,10 @@ featured_image: ./images/ironman2.jpg
 ![sort-catefory](/images/sort-catefory.jpg)
 
 ---
+GRANT ALL  PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;
+grant all privileges on *.* to 'root'@'192.168.0.103' identified by '123456' with grant option;
+grant all privileges on *.* to 'root'@'%' identified by '123456';
+update mysql.user set authentication_string=password('123456') where user='root' and Host ='192.168.0.103';
 
 #### 复杂度
 
