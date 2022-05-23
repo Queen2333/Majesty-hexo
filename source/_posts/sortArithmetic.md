@@ -254,6 +254,34 @@ update mysql.user set authentication_string=password('123456') where user='root'
         arr[j] = temp;
       }
     ```
+    或者
+    ```
+      function quickSort(arr, begin, end) {
+        if (begin >= end) {
+            return
+        }
+        let temp = arr[begin];
+        let left = begin;
+        let right = end;
+        while(right > left) {
+            while(right > left && arr[right] >= temp) {
+                right--;
+            }
+            while(right > left && arr[left] <= temp) {
+                left++;
+            }
+            [arr[left], arr[right]] = [arr[right], arr[left]];
+        }
+
+        [arr[begin], arr[right]] = [arr[right], arr[begin]];
+        quickSort(arr, begin, right - 1);
+        quickSort(arr, right + 1, end);
+        return arr;
+      }
+      const arr = [3, 6, 1, 2, 5, 4];
+      const result = quickSort(arr, 0, arr.length - 1);
+      console.log(result);
+    ```
 
 ---
 

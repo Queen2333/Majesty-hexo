@@ -128,8 +128,8 @@ function debounce(fn, delay, immediate = true) {
         if (timer) clearTimeout(timer)
         immediate && !timer && fn.apply(this, args)
         timer = setTimeout(() => {
-        timer = null
-        !immediate && fn.apply(this, args)
+            timer = null
+            !immediate && fn.apply(this, args)
         }, delay)
     }
 }
@@ -150,11 +150,11 @@ function throttle(fn, delay, immediate = true) {
     let timer = null
     return function (...args) {
         if (!timer) {
-        timer = setTimeout(() => {
-            timer = null
-            !immediate && fn.apply(this, args)
-        }, delay)
-        immediate && fn.apply(this, args)
+            timer = setTimeout(() => {
+                timer = null
+                !immediate && fn.apply(this, args)
+            }, delay)
+            immediate && fn.apply(this, args)
         }
     }
 }
@@ -332,15 +332,49 @@ function deepClone(obj) {
 
 跨域解决方法
 
-1、 通过 jsonp 跨域（只支持 get，不支持 post ）
+1、 通过 jsonp 跨域（只支持 get，不支持 post ）：
+
+  核心思想：网页通过添加一个```<script>```元素，向服务器请求 JSON 数据，服务器收到请求后，将数据放在一个指定名字的回调函数的参数位置传回来。
+
+  原理：
+  客户端利用 script 标签的 src 属性，去请求一个接口，因为 src 属性不受跨域影响。
+  服务端响应一个字符串
+  客户端接收到字符串，然后把它当做 JS 代码运行。
+  
 2、 document.domain + iframe 跨域
 3、 location.hash + iframe
 4、 window.name + iframe 跨域
 5、 postMessage 跨域
-6、 跨域资源共享（CORS） 用得多
+6、 跨域资源共享（CORS）：
+
+  CORS 是跨域资源分享（Cross-Origin Resource Sharing）的缩写。它是 W3C 标准，属于跨源 AJAX 请求的根本解决方法
+  实际上就是在响应头添加允许跨域的源
+  Access-Control-Allow-Origin: 字段和值(意思就是允许去哪些源地址去请求这个服务器)
+
 7、 nginx 代理跨域
 8、 nodejs 中间件代理跨域
 9、 WebSocket 协议跨域
+10、vue-cli代理转发
+
+  在前端服务和后端接口服务之间 架设一个中间代理服务，它的地址保持和前端服务一致，那么：
+  代理服务和前端服务之间由于协议域名端口三者统一不存在跨域问题，可以直接发送请求
+  代理服务和后端服务之间由于并不经过浏览器没有同源策略的限制，可以直接发送请求
+  这样，我们就可以通过中间这台服务器做接口转发，在开发环境下解决跨域问题，看起来好像挺复杂，其实vue-cli已经为我们内置了该技术，我们只需要按照要求配置一下即可。
+
+  ```
+  devServer: {
+    proxy: {
+      // http://c.m.163.com/nc/article/headline/T1348647853363/0-40.html
+      '/api': { // 请求相对路径以/api开头的, 才会走这里的配置
+        target: 'http://c.m.163.com', // 后台接口域名 我们要代理的真实的接口地址
+        changeOrigin: true, // 改变请求来源(欺骗后台你的请求是从http://c.m.163.com)
+        pathRewrite: {
+          '^/api': '' // 因为真实路径中并没有/api这段, 所以要去掉这段才能拼接正确地址转发请求
+        }
+      }
+    }
+  }
+  ```
 
 ---
 
@@ -409,6 +443,16 @@ element.addEventListener(event, function, useCapture)
 　　（6）如果两个值都是 null，或是 undefined，那么相等
 
 注意： null 除了和 undefined   和其它任何值比都是不等的，undefined 也是一样
+
+---
+
+#### js判断类型
+
+typeof
+
+instanceof
+
+prototype.toString.call()
 
 ---
 
@@ -488,6 +532,8 @@ element.addEventListener(event, function, useCapture)
 
 ---
 #### v8 引擎--垃圾回收机制
+
+https://xiaozhuanlan.com/advance/4158792360
 
 https://juejin.cn/post/6844904016325902344
 
@@ -701,3 +747,22 @@ setTimeout(() => console.log(foo), 500); //baz
 ES6 模块之中，顶层的 this 指向 undefined ，即不应该在顶层代码使用 this
 
 ---
+
+#### Object.defineProperty()
+
+https://www.jianshu.com/p/8fe1382ba135
+
+---
+
+#### i++与++i的区别
+
+https://www.jianshu.com/p/3d3481e3d99e
+
+---
+
+#### 继承
+
+https://github.com/mqyqingfeng/Blog/issues/16
+
+---
+

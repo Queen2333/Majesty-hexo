@@ -1,6 +1,6 @@
 ---
 title: js闭包相关 （摘自波神的书）
-featured_image: ./images/blackwidow.jpg
+featured_image: ./images/venom.jpeg
 ---
 
 #### 作用域与作用域链

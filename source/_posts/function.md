@@ -1,6 +1,6 @@
 ---
 title: 函数相关 （摘自波神的书）
-featured_image: ./images/blackwidow.jpg
+featured_image: ./images/vision.webp
 ---
 
 

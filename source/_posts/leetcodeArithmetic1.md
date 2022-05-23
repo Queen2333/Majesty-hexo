@@ -1,11 +1,11 @@
 ---
 title: 力扣刷题总结（入门级）
-featured_image: ./images/spiderman.jpg
+featured_image: ./images/antMan.jpeg
 ---
 
 #### 两数之和 -- 哈希映射
 
-给定一个整数数组 nums  和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那   两个   整数，并返回它们的数组下标。
+给定一个整数数组 nums  和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那两个整数，并返回它们的数组下标。
 
 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
 
@@ -133,16 +133,16 @@ featured_image: ./images/spiderman.jpg
       ['}', '{']
     ])
     const stk = []
-    s.split('').forEach(item => {
-      if (map.has(item)) {
-        if (map.get(item) !== stk[stk.length - 1] || !stk.length) {
-          return false
+    for (let item of s) {
+        if (map.has(item)) {
+            if (map.get(item) !== stk[stk.length - 1] || !stk.length) {
+            return false
+            }
+            stk.pop()
+        } else {
+            stk.push(item)
         }
-        stk.pop()
-      } else {
-        stk.push(item)
-      }
-    })
+    }
     return !stk.length
   };
 ```
@@ -299,18 +299,19 @@ featured_image: ./images/spiderman.jpg
   * @return {number}
   */
   var searchInsert = function(nums, target) {
-    const n = nums.length;
-    let left = 0, right = n - 1, ans = n;
-    while (left <= right) {
-      let mid = ((right - left) / 2) + left;
-      if (target <= nums[mid]) {
-        ans = mid;
-        right = mid - 1;
-      } else {
-        left = mid + 1;
-      }
+   const n = nums.length;
+    let l = 0, r = n - 1
+    while(l <= r) {
+        let mid = Math.floor((r + l) / 2)
+        if (target === nums[mid]) {
+            return mid
+        } else if (target < nums[mid]) {
+            r = mid - 1
+        } else {
+            l = mid + 1
+        }
     }
-    return ans;
+    return l
   };
 ```
 
@@ -1098,3 +1099,7 @@ featured_image: ./images/spiderman.jpg
 ```
 
 ---
+
+#### 斐波那契数列
+
+https://juejin.cn/post/6844904196706140168

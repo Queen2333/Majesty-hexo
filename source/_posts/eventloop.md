@@ -1,6 +1,6 @@
 ---
 title: 事件循环机制（摘自波神的书）
-featured_image: ./images/blackwidow.jpg
+featured_image: ./images/wanda.webp
 ---
 
 因为chrome浏览器中新标准中的事件循环机制与nodejs类似，因此此处就整合nodejs一起来理解，其中会介绍到几个nodejs有，但是浏览器中没有的API，大家只需要了解就好，不一定非要知道她是如何使用。比如process.nextTick，setImmediate

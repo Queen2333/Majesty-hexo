@@ -1,6 +1,6 @@
 ---
 title: 函数柯里化 （摘自波神的书）
-featured_image: ./images/blackwidow.jpg
+featured_image: ./images/captainAmerica.webp
 ---
 
 柯里化是函数的一个高级应用，想要理解它并不简单。因此我一直在思考应该如何更加表达才能让大家理解起来更加容易。
