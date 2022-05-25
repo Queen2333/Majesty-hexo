@@ -8,7 +8,7 @@ featured_image: ./images/blackwidow.jpg
 
 async 作为一个关键字放到函数前面，它的调用会返回一个 promise  对象。如果 async  函数中有返回值 ,当调用该函数时，内部会调用 Promise.solve()  方法把它转化成一个 promise  对象作为返回, 但如果 timeout  函数内部抛出错误，就会调用 Promise.reject()  返回一个 promise 对象，要想获取到 async  函数的执行结果，就要调用 promise 的 then  或 catch  来给它注册回调函数，如果只是 async,  和 promise  差不多，但有了 await 就不一样了， await  关键字只能放到 async  函数里面，await 是等待的意思，那么它等待什么呢，它后面跟着什么呢？其实它后面可以放任何表达式，不过我们更多的是放一个返回 promise  对象的表达式，它等待的是 promise  对象的执行完毕，并返回结果。
 
-```
+```js
   function getCallSettings() {
     return utils.ajax({
       url: '/dialer/dialerSetting',
@@ -61,11 +61,14 @@ Promise.all接收一个Promise对象组成的数组作为参数，当这个数�
 
 五、 Promise.race
 
+原理 https://juejin.cn/post/7004786857389064205
+利用 Promise.race 提前终止多余异步请求 https://www.365seal.com/y/elnW5P6KVr.html
+
 与Promise.all相似的是，Promise.race都是以一个Promise对象组成的数组作为参数，不同的是，只要当数组中的其中一个Promsie状态变成resolved或者rejected时，就可以调用.then方法了。而传递给then方法的值也会有所不同。（then接收到的参数为第一个成功的promise对象）
 
 手动实现：
 
-```
+```js
 // ①自动执行函数，②三个状态，③then
 class Promise {
   constructor (fn) {
@@ -107,6 +110,32 @@ class Promise {
 }
 ```
 
+##### Promise并发控制数量的方法
+
+```js
+async function asyncPool(poolLimit, array, iteratorFn) {
+  const ret = []; // 用于存放所有的promise实例
+  const executing = []; // 用于存放目前正在执行的promise
+  for (const item of array) {
+    const p = Promise.resolve(iteratorFn(item)); // 防止回调函数返回的不是promise，使用Promise.resolve进行包裹
+    ret.push(p);
+    if (poolLimit <= array.length) {
+      // then回调中，当这个promise状态变为fulfilled后，将其从正在执行的promise列表executing中删除
+      const e = p.then(() => executing.splice(executing.indexOf(e), 1));
+      executing.push(e);
+      if (executing.length >= poolLimit) {
+        // 一旦正在执行的promise列表数量等于限制数，就使用Promise.race等待某一个promise状态发生变更，
+        // 状态变更后，就会执行上面then的回调，将该promise从executing中删除，
+        // 然后再进入到下一次for循环，生成新的promise进行补充
+        await Promise.race(executing);
+      }
+    }
+  }
+  return Promise.all(ret);
+}
+```
+原文 https://www.qetool.com/scripts/view/13313.html
+
 ---
 
 #### 防抖和节流
@@ -121,7 +150,7 @@ window 触发 resize 的时候，不断的调整浏览器窗口大小会不断�
 非立即执行版的意思是触发事件后函数不会立即执行，而是在 n 秒后执行，如果在 n 秒内又触发了事件，则会重新计算函数执行时间。
 立即执行版的意思是触发事件后函数会立即执行，然后 n 秒内不触发事件才能继续执行函数的效果。
 
-```
+```js
 function debounce(fn, delay, immediate = true) {
     let timer = null
     return function (...args) {
@@ -145,7 +174,7 @@ addEventListener('scroll', debounce(fn, 1000))
 鼠标不断点击触发，mousedown/mousemove(单位时间内只触发一次)
 监听滚动事件，比如是否滑到底部自动加载更多，用 throttle 来判断 所谓防抖，就是指触发事件后在 n 秒内函数只能执行一次，如果在 n 秒内又触发了事件，则会重新计算函数执行时间。
 
-```
+```js
 function throttle(fn, delay, immediate = true) {
     let timer = null
     return function (...args) {
@@ -189,7 +218,7 @@ bind 除了返回是函数以外，它 的参数和 call 一样。
 当然，三者的参数不限定是 string 类型，允许是各种类型，包括函数 、 object 等等！
 
 call：
-```
+```js
 // 将要改变this指向的方法挂到目标this上执行并返回
 Function.prototype.mycall = function (context) {
   if (typeof this !== 'function') {
@@ -205,7 +234,7 @@ Function.prototype.mycall = function (context) {
 ```
 
 apply:
-```
+```js
 Function.prototype.myapply = function (context) {
   if (typeof this !== 'function') {
     throw new TypeError('not funciton')
@@ -224,7 +253,7 @@ Function.prototype.myapply = function (context) {
 ```
 
 bind:
-```
+```js
 Function.prototype.mybind = function (context) {
   if (typeof this !== 'function') {
     throw new TypeError('Error')
@@ -288,7 +317,7 @@ javascript 存储对象都是存地址的，所以浅拷贝会导致 obj1 和 ob
 
 实现方式
 
-```
+```js
 // 浅拷贝
 // 1. ...实现
 let copy1 = {...{x:1}}
@@ -298,7 +327,7 @@ let copy1 = {...{x:1}}
 let copy2 = Object.assign({}, {x:1})
 ```
 
-```
+```js
 // 深拷贝
 // 1. JOSN.stringify()/JSON.parse()
 let obj = {a: 1, b: {x: 3}}
@@ -361,7 +390,7 @@ function deepClone(obj) {
   代理服务和后端服务之间由于并不经过浏览器没有同源策略的限制，可以直接发送请求
   这样，我们就可以通过中间这台服务器做接口转发，在开发环境下解决跨域问题，看起来好像挺复杂，其实vue-cli已经为我们内置了该技术，我们只需要按照要求配置一下即可。
 
-  ```
+  ```js
   devServer: {
     proxy: {
       // http://c.m.163.com/nc/article/headline/T1348647853363/0-40.html
@@ -594,7 +623,7 @@ https://juejin.cn/post/6844904016325902344
 
 设置 cookie
 
-```
+```js
   var name = "jack";
   var pwd = "123";
   var now = new Date();
@@ -614,7 +643,7 @@ https://juejin.cn/post/6844904016325902344
 
     1.截取字符串
 
-    ```
+    ```js
       function getKey(key) {
         var data = document.cookie;
         var findStr = key + "=";
@@ -634,7 +663,7 @@ https://juejin.cn/post/6844904016325902344
 
     2.使用正则表达式+JSON
 
-    ```
+    ```js
       function getKey(key) {
         return JSON.parse("{\"" +document.cookie.replace(/;\s+/gim, "\",\"").replace(/=/gim, "\":\"") + "\"}")[key];
       }
@@ -642,7 +671,7 @@ https://juejin.cn/post/6844904016325902344
 
 清除 cookie
 
-```
+```js
   var name = null;
   var pwd = null;
   var now = new Date();
@@ -671,7 +700,7 @@ https://juejin.cn/post/6844903497599549453
 
 实现：
 
-```
+```js
 function myNew (fun) {
   return function () {
     // 创建一个新对象且将其隐式原型指向构造函数原型
@@ -711,7 +740,7 @@ import：编译时加载（效率更高）【由于是编译时加载，所以im
 require：模块就是对象，输入时必须查找对象属性
 import：ES6 模块不是对象，而是通过 export 命令显式指定输出的代码，再通过 import 命令输入（这也导致了没法引用 ES6 模块本身，因为它不是对象）。由于 ES6 模块是编译时加载，使得静态分析成为可能。有了它，就能进一步拓宽 JavaScript 的语法，比如引入宏（macro）和类型检验（type system）这些只能靠静态分析实现的功能。
 
-```
+```js
 // CommonJS模块
 let { exists, readFile } = require('fs');
 // 等同于
@@ -722,7 +751,7 @@ let readfile = fs.readfile;
 ```
 上面CommonJs模块中，实质上整体加载了fs对象（fs模块），然后再从fs对象上读取方法
 
-```
+```js
 // ES6模块
 import { exists, readFile } from 'fs';
 ```
@@ -734,7 +763,7 @@ CommonJs模块和ES6模块的区别：
 （2）ES6 的模块自动采用严格模式，不管你有没有在模块头部加上 “use strict”;
 （3）CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用，举例如下
 
-```
+```js
 // m1.js
 export var foo = 'bar';
 setTimeout(() => foo = 'baz', 500);

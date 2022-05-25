@@ -1,5 +1,5 @@
 ---
-title: js面试知识点综合
+title: ajax相关知识点综合
 featured_image: ./images/spiderman1.jpeg
 ---
 

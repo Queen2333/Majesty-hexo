@@ -279,6 +279,21 @@ React组件间通信常见的几种情况:
 
 ---
 
+#### react为什么使用虚拟dom
+
+https://zhuanlan.zhihu.com/p/411785091
+
+---
+
+#### 虚拟dom的原理
+
+虚拟 DOM 的实现原理主要包括以下 3 部分：
+
+用 JavaScript 对象模拟真实 DOM 树，对真实 DOM 进行抽象；
+diff 算法 — 比较两棵虚拟 DOM 树的差异；
+pach 算法 — 将两个虚拟 DOM 对象的差异应用到真正的 DOM 树。
+
+---
 #### vue 和 react 的 diff 算法比较
 
 相同点：
@@ -323,6 +338,14 @@ https://www.zhoulujun.cn/html/webfront/ECMAScript/vue/8295.html
  fiber原理 https://segmentfault.com/a/1190000039189408
 
  hooks和fiber的关系 https://mp.weixin.qq.com/s/aXqPdPVxY4_D--dU3mILpQ
+
+---
+
+#### hooks的原理
+
+https://mp.weixin.qq.com/s/J0_PLrbVZMRAiwjWK2WDrw
+
+https://zhuanlan.zhihu.com/p/443264124
 
 ---
 
@@ -372,7 +395,15 @@ https://juejin.cn/post/6940942549305524238#heading-1
 
 ---
 
+#### redux的reducer为什么要设计成不能直接修改原状态，而返回修新状态对象
 
+第一，从源码角度，因为redux会对reducer返回的状态进行引用地址的比较，不同才更新，所以直接修改旧状态不会更新。
+
+第二，从设计角度，如果要知道reducer返回的状态是否有变化，必须进行状态对象的深度比较，这样比较消耗性能，所以仅进行状态对象引用地址的比较，由开发者来决定是否更新，返回新状态才更新。
+
+https://segmentfault.com/q/1010000037662437
+
+---
 #### 几种Hook的使用
 
 hook 的基本操作

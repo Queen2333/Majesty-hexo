@@ -5,7 +5,7 @@ featured_image: ./images/hawkeye.webp
 
 #### instanceof的原理
 
-```
+```js
 // 右边变量的原型存在于左边变量的原型链上
 function instanceOf(left, right) {
   let leftValue = left.__proto__
@@ -26,7 +26,7 @@ function instanceOf(left, right) {
 
 #### Event Bus
 
-```
+```js
 // 组件通信，一个触发与监听的过程
 class EventEmitter {
   constructor () {
@@ -60,7 +60,7 @@ emitter.emit('ages', 18)  // 18
 
 #### 双向数据绑定
 
-```
+```js
 let obj = {}
 let input = document.getElementById('input')
 let span = document.getElementById('span')
@@ -86,7 +86,7 @@ input.addEventListener('keyup', function(e) {
 
 #### 实现一个简单路由
 
-```
+```js
 class Route{
   constructor(){
     // 路由存储对象
@@ -115,7 +115,7 @@ class Route{
 
 #### 实现懒加载
 
-```
+```html
 
 <ul>
   <li><img src="./imgs/default.png" data="./imgs/1.png" alt=""></li>
@@ -129,7 +129,8 @@ class Route{
   <li><img src="./imgs/default.png" data="./imgs/9.png" alt=""></li>
   <li><img src="./imgs/default.png" data="./imgs/10.png" alt=""></li>
 </ul>
-
+```
+```js
 let imgs =  document.querySelectorAll('img')
 // 可视区高度
 let clientHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
@@ -152,7 +153,7 @@ setInterval(lazyLoad, 1000)
 
 #### rem实现原理
 
-```
+```js
 function setRem () {
   let doc = document.documentElement
   let width = doc.getBoundingClientRect().width
@@ -166,7 +167,7 @@ function setRem () {
 
 #### 实现AJAX
 
-```
+```js
 
 // 1. 简单实现
 
@@ -251,7 +252,7 @@ function ajax (options) {
 
 #### 实现拖拽
 
-```
+```js
 window.onload = function () {
   // drag处于绝对定位状态
   let drag = document.getElementById('box')
