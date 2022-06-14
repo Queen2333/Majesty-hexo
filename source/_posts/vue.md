@@ -19,13 +19,13 @@ featured_image: ./images/thor.jpg
 
 5.$attrs/$listeners/$root
 
-    https://blog.csdn.net/Kratial/article/details/108825249
+https://blog.csdn.net/Kratial/article/details/108825249
 
-    https://blog.csdn.net/qdcainiao/article/details/119741534
+https://blog.csdn.net/qdcainiao/article/details/119741534
 
 6.provide/inject
 
-    https://blog.csdn.net/yw00yw/article/details/107341934
+https://blog.csdn.net/yw00yw/article/details/107341934
 
 分三类
 
@@ -34,6 +34,14 @@ featured_image: ./images/thor.jpg
 2.兄弟组件通信
 
 3.跨层组件通信
+
+---
+
+#### 父组件调用子组件的方法
+
+```
+this.$refs.child.func()
+```
 
 ---
 

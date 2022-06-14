@@ -279,6 +279,12 @@ React组件间通信常见的几种情况:
 
 ---
 
+#### 父组件调用子组件的方法
+
+https://blog.csdn.net/qq_36990322/article/details/109858890
+
+---
+
 #### react为什么使用虚拟dom
 
 https://zhuanlan.zhihu.com/p/411785091
