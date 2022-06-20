@@ -676,6 +676,8 @@ Vue 推荐在绝大多数情况下使用模板创建 html，但在一些场景�
 
 ##### 和react的key做对比
 
+https://blog.csdn.net/newway007/article/details/104900608
+
 https://www.zhoulujun.cn/html/webfront/ECMAScript/vue/8295.html
 
 
