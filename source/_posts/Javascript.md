@@ -51,22 +51,7 @@ then方法的执行结果也会返回一个Promise对象。因此我们可以进
 
 then(null, function() {}) 就等同于catch(function() {})
 
-三、Promise中的数据传递
-
-四、Promise.all
-
-当有一个ajax请求，它的参数需要另外2个甚至更多请求都有返回结果之后才能确定，那么这个时候，就需要用到Promise.all来帮助我们应对这个场景。
-
-Promise.all接收一个Promise对象组成的数组作为参数，当这个数组所有的Promise对象状态都变成resolved或者rejected的时候，它才会去调用then方法。（如果都成功，then接收到的是promise对象数组，否则走到catch）
-
-五、 Promise.race
-
-原理 https://juejin.cn/post/7004786857389064205
-利用 Promise.race 提前终止多余异步请求 https://www.365seal.com/y/elnW5P6KVr.html
-
-与Promise.all相似的是，Promise.race都是以一个Promise对象组成的数组作为参数，不同的是，只要当数组中的其中一个Promsie状态变成resolved或者rejected时，就可以调用.then方法了。而传递给then方法的值也会有所不同。（then接收到的参数为第一个成功的promise对象）
-
-手动实现：
+手动实现一个promise：
 
 ```js
 // ①自动执行函数，②三个状态，③then
@@ -109,6 +94,52 @@ class Promise {
   }
 }
 ```
+
+三、Promise中的数据传递
+
+四、Promise.all
+
+当有一个ajax请求，它的参数需要另外2个甚至更多请求都有返回结果之后才能确定，那么这个时候，就需要用到Promise.all来帮助我们应对这个场景。
+
+Promise.all接收一个Promise对象组成的数组作为参数，当这个数组所有的Promise对象状态都变成resolved或者rejected的时候，它才会去调用then方法。（如果都成功，then接收到的是promise对象数组，否则走到catch）
+
+五、 Promise.race
+
+原理 https://juejin.cn/post/7004786857389064205
+利用 Promise.race 提前终止多余异步请求 https://www.365seal.com/y/elnW5P6KVr.html
+
+```js
+/**
+ *  解决异步操作冲突的问题
+ *  多次触发后，丢弃未响应的结果，只有最新的一次会进入 then回调中
+ *  @template T
+ *  @param {T & function} fn 需要包装的异步操作
+ *  @return T
+ */
+export function useLatestCall(fn) {
+  //  “假” promise 中的 reject 方法
+  let prePromiseReject
+  return function() {
+    // 如果存在，就行终止
+    prePromiseReject?.(new Error('新的promise执行，旧promise被丢弃'))
+    // 创建“假” promise，并将reject赋值给闭包变量
+    const fakePromise = new Promise((resolve, reject) => (prePromiseReject = reject))
+    return Promise.race([fakePromise, fn(...arguments)])
+        .finally(() => (prePromiseReject = null))
+  }
+}
+
+const fetchData = useLatestCall(getXXXXX)
+const reloadPage = () => {
+  // 只有最近触发的一次会进入 then 回调
+  fetchData(params).then(res => {
+    // xxx
+  })
+}
+```
+
+与Promise.all相似的是，Promise.race都是以一个Promise对象组成的数组作为参数，不同的是，只要当数组中的其中一个Promsie状态变成resolved或者rejected时，就可以调用.then方法了。而传递给then方法的值也会有所不同。（then接收到的参数为第一个成功的promise对象）
+
 
 ##### Promise并发控制数量的方法
 
@@ -570,6 +601,20 @@ https://juejin.cn/post/6844904016325902344
 
 #### 前端缓存
 ##### http 缓存
+
+缓存过程：
+
+浏览器第一次加载资源，服务器返回200，浏览器将资源文件从服务器上请求下载下来，并把response header及该请求的返回时间(要与Cache-Control和Expires对比)一并缓存；
+
+下一次加载资源时，先比较当前时间和上一次返回200时的时间差，如果没有超过Cache-Control设置的max-age，则没有过期，命中强缓存，不发请求直接从本地缓存读取该文件（如果浏览器不支持HTTP1.1，则用Expires判断是否过期）；
+
+如果时间过期，服务器则查看header里的If-None-Match和If-Modified-Since ；
+
+服务器优先根据Etag的值判断被请求的文件有没有做修改，Etag值一致则没有修改，命中协商缓存，返回304；如果不一致则有改动，直接返回新的资源文件带上新的Etag值并返回 200；
+
+如果服务器收到的请求没有Etag值，则将If-Modified-Since和被请求文件的最后修改时间做比对，一致则命中协商缓存，返回304；不一致则返回新的last-modified和文件并返回 200；
+
+使用协商缓存主要是为了进一步降低数据传输量，如果数据没有变，就不必要再传一遍
 
 强缓存
 
