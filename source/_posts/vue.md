@@ -746,6 +746,12 @@ https://github.com/pfan123/Articles/issues/62
 
 ---
 
+#### vuex 用法
+
+https://juejin.cn/post/6844903949586153480
+
+---
+
 #### 对 MVC、MVP 和 MVVM 的理解
 
 1.三者都是框架模式，他们设计目标都是为了解决 Model 和 View 的耦合问题
