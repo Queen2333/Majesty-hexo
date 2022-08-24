@@ -731,8 +731,15 @@ https://juejin.cn/post/6844904016325902344
 
 https://juejin.cn/post/6844903497599549453
 
+
 ---
 
+#### defer和async
+
+https://segmentfault.com/q/1010000000640869/a-1020000000641029
+
+
+---
 #### new
 
 •创建一个新的对象；
