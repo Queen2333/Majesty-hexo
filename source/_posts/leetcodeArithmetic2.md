@@ -713,3 +713,110 @@ var sortColors = function(nums) {
     return nums;
 };
 ```
+
+---
+
+#### 子集 -- 回溯
+
+给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+
+解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var subsets = function(nums) {
+    if (nums.length === 0) return [];
+    let ans = [];
+    const backtrack = (path, m) => {
+        ans.push(path.slice());
+        for (let i = m; i < nums.length; i++) {
+            path.push(nums[i]);
+            backtrack(path, i + 1);
+            path.pop();
+        }
+    }
+    backtrack([], 0);
+    return ans;
+};
+```
+
+---
+
+#### 不同的二叉搜索树 -- 动态规划
+
+给你一个整数 n ，求恰由 n 个节点组成且节点值从 1 到 n 互不相同的 二叉搜索树 有多少种？返回满足题意的二叉搜索树的种数。
+
+```js
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var numTrees = function(n) {
+    if (n <= 1) return 1;
+    let dp = new Array(n + 1).fill(0);
+    dp[0] = 1;
+    dp[1] = 1;
+    for (let i = 2; i <= n; i++) {
+        for (let j = 1; j <= i; j++) {
+            dp[i] += dp[j - 1] * dp[i - j]
+        }
+    }
+    return dp[n];
+};
+```
+
+---
+
+#### 验证二叉搜索树 -- 递归
+
+给你一个二叉树的根节点 root ，判断其是否是一个有效的二叉搜索树。
+
+有效 二叉搜索树定义如下：
+
+节点的左子树只包含 小于 当前节点的数。
+节点的右子树只包含 大于 当前节点的数。
+所有左子树和右子树自身必须也是二叉搜索树。
+
+```rust
+// Definition for a binary tree node.
+// #[derive(Debug, PartialEq, Eq)]
+// pub struct TreeNode {
+//   pub val: i32,
+//   pub left: Option<Rc<RefCell<TreeNode>>>,
+//   pub right: Option<Rc<RefCell<TreeNode>>>,
+// }
+//
+// impl TreeNode {
+//   #[inline]
+//   pub fn new(val: i32) -> Self {
+//     TreeNode {
+//       val,
+//       left: None,
+//       right: None
+//     }
+//   }
+// }
+use std::rc::Rc;
+use std::cell::RefCell;
+impl Solution {
+    pub fn helper(root: &Option<Rc<RefCell<TreeNode>>>, lower: i64, upper: i64) -> bool {
+        match root {
+            None => true,
+            Some(node) => {
+                if node.borrow().val as i64 <= lower || node.borrow().val as i64 >= upper {
+                    false
+                } else {
+                    Solution::helper(&node.borrow().left, lower, node.borrow().val as i64) &&
+                    Solution::helper(&node.borrow().right, node.borrow().val as i64, upper)
+                }
+            }
+        }
+    }
+    pub fn is_valid_bst(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+        Solution::helper(&root, i64::min_value(), i64::max_value())
+    }
+}
+```
