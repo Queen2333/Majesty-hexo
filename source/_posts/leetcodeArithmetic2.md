@@ -820,3 +820,113 @@ impl Solution {
     }
 }
 ```
+
+---
+
+#### 二叉树的层序遍历 -- bfs
+
+给你二叉树的根节点 root ，返回其节点值的 层序遍历 。 （即逐层地，从左到右访问所有节点）。
+
+```rust
+// Definition for a binary tree node.
+// #[derive(Debug, PartialEq, Eq)]
+// pub struct TreeNode {
+//   pub val: i32,
+//   pub left: Option<Rc<RefCell<TreeNode>>>,
+//   pub right: Option<Rc<RefCell<TreeNode>>>,
+// }
+//
+// impl TreeNode {
+//   #[inline]
+//   pub fn new(val: i32) -> Self {
+//     TreeNode {
+//       val,
+//       left: None,
+//       right: None
+//     }
+//   }
+// }
+use std::rc::Rc;
+use std::cell::RefCell;
+impl Solution {
+    pub fn level_order(root: Option<Rc<RefCell<TreeNode>>>) -> Vec<Vec<i32>> {
+        let mut ans = Vec::new();
+        let mut levels = Vec::new();
+        if root.is_none() {
+            return ans;
+        }
+        levels.push(root.unwrap());
+        while levels.is_empty()!= true {
+            let mut cur = Vec::new();
+            for i in 0..levels.len() {
+                let mut node = levels.remove(0);
+                cur.push(node.borrow_mut().val);
+                if node.borrow_mut().left.is_some() {
+                    levels.push(node.borrow_mut().left.take().unwrap());
+                };
+                if node.borrow_mut().right.is_some() {
+                    levels.push(node.borrow_mut().right.take().unwrap());
+                };
+            }
+            ans.push(cur);
+        };
+        ans
+    }
+}
+```
+
+---
+
+#### 从前序与中序遍历序列构造二叉树 -- 递归
+
+给定两个整数数组 preorder 和 inorder ，其中 preorder 是二叉树的先序遍历， inorder 是同一棵树的中序遍历，请构造二叉树并返回其根节点。
+
+```rust
+// Definition for a binary tree node.
+// #[derive(Debug, PartialEq, Eq)]
+// pub struct TreeNode {
+//   pub val: i32,
+//   pub left: Option<Rc<RefCell<TreeNode>>>,
+//   pub right: Option<Rc<RefCell<TreeNode>>>,
+// }
+//
+// impl TreeNode {
+//   #[inline]
+//   pub fn new(val: i32) -> Self {
+//     TreeNode {
+//       val,
+//       left: None,
+//       right: None
+//     }
+//   }
+// }
+use std::rc::Rc;
+use std::cell::RefCell;
+use std::collections::HashMap;
+impl Solution {
+    pub fn build_tree(preorder: Vec<i32>, inorder: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+        let preLen = preorder.len();
+        let inLen = inorder.len();
+        if preLen != inLen {
+            panic!("Incorrect");
+        };
+        let mut map = HashMap::new();
+        for i in 0..inLen {
+            map.insert(inorder[i], i);
+        };
+        Solution::helper(&preorder, 0, preLen - 1, &map, 0, inLen - 1)
+    }
+    pub fn helper(preorder: &Vec<i32>, preleft: usize, preRight: usize, map: &HashMap<i32, usize>,
+                  inLeft: usize, inRight: usize) -> Option<Rc<RefCell<tree_node::TreeNode>>> {
+        if preleft > preRight || inLeft > inRight {
+            return None
+        }
+        let mut rootVal = &preorder[preleft];
+        let mut root = TreeNode::new(*rootVal);
+        let pIndex = map.get(rootVal).unwrap();
+        root.left = Solution::helper(&preorder, preleft + 1, pIndex - inLeft + preleft, map, inLeft, pIndex - 1);
+        root.right = Solution::helper(&preorder, pIndex - inLeft + preleft + 1, preRight, map, pIndex + 1, inRight);
+        Some(Rc::new(RefCell::new(root)))
+    }
+}
+```
