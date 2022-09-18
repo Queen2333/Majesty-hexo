@@ -930,3 +930,39 @@ impl Solution {
     }
 }
 ```
+
+---
+
+#### 最长连续序列 -- 哈希
+
+给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+
+请你设计并实现时间复杂度为 O(n) 的算法解决此问题。
+
+```rust
+use std::collections::HashSet;
+impl Solution {
+    pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
+        if nums.len() == 0 {
+            return 0;
+        };
+        let mut num_set = HashSet::new();
+        for num in nums {
+            num_set.insert(num);
+        }
+        let mut longest_len = 0;
+        for &num in num_set.iter() {
+            if !num_set.contains(&(num - 1)) {
+                let mut current_num = num;
+                let mut current_len = 1;
+                while (num_set.contains(&(current_num + 1))) {
+                    current_num += 1;
+                    current_len += 1;
+                }
+                longest_len = std::cmp::max(longest_len, current_len);
+            }
+        }
+        longest_len
+    }
+}
+```
