@@ -966,3 +966,34 @@ impl Solution {
     }
 }
 ```
+
+---
+
+#### 单词拆分 -- 动态规划
+
+给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。
+
+注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。
+
+```rust
+use std::collections::HashSet;
+impl Solution {
+    pub fn word_break(s: String, word_dict: Vec<String>) -> bool {
+        let n = s.len();
+        let word_dict_set:HashSet<String> = word_dict.into_iter().collect();
+
+        let mut dp = vec![false; n + 1];
+        dp[0] = true;
+        let mut i = 1;
+        for i in 1..(n + 1) {
+            for j in 0..i {
+                if dp[j] && word_dict_set.contains(&s[j..i]) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        *dp.last().unwrap()
+    }
+}
+```
