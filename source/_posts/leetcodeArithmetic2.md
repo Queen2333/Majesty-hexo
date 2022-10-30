@@ -1105,3 +1105,58 @@ class LRUCache {
  * obj.put(key,value)
  */
 ```
+
+---
+
+#### 148. 排序链表 -- 归并排序 + 递归 + 快慢指针
+
+给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+
+```ts
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     val: number
+ *     next: ListNode | null
+ *     constructor(val?: number, next?: ListNode | null) {
+ *         this.val = (val===undefined ? 0 : val)
+ *         this.next = (next===undefined ? null : next)
+ *     }
+ * }
+ */
+const getMidNode = (head: ListNode | null) => {
+    if (head === null || head.next === null) return head;
+    let slow = head, fast = head.next.next;
+    while(fast !== null && fast.next !== null) {
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+    return slow;
+}
+const merge = (l1: ListNode | null, l2: ListNode | null) => {
+    let dumy = {next: null};
+    let curr = dumy;
+    while(l1 !== null && l2 !== null) {
+        if (l1.val < l2.val) {
+            curr.next = l1;
+            l1 = l1.next;
+        } else {
+            curr.next = l2;
+            l2 = l2.next;
+        }
+        curr = curr.next;
+    }
+    curr.next = l1 !== null ? l1 : l2;
+    return dumy.next;
+}
+function sortList(head: ListNode | null): ListNode | null {
+    if(head === null || head.next === null) return head;
+    let midNode = getMidNode(head);
+    let rightHead = midNode.next;
+
+    midNode.next = null;
+    let left = sortList(head);
+    let right = sortList(rightHead);
+    return merge(left, right);
+};
+```
