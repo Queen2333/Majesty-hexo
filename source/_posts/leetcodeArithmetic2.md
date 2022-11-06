@@ -1160,3 +1160,27 @@ function sortList(head: ListNode | null): ListNode | null {
     return merge(left, right);
 };
 ```
+
+---
+
+#### 乘积最大子数组 -- 动态规划
+
+给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+```rust
+
+impl Solution {
+    pub fn max_product(nums: Vec<i32>) -> i32 {
+        let mut ans = nums[0];
+        let mut dp_min = nums[0];
+        let mut dp_max = nums[0];
+        for &i in nums[1..].iter() {
+            let (min, max) = (dp_min, dp_max);
+            dp_max = i32::max(max * i, i32::max(i, min * i));
+            dp_min = i32::min(min * i, i32::min(i, max * i));
+            ans = ans.max(dp_max);
+        }
+        ans
+    }
+}
+```
