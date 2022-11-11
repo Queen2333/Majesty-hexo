@@ -1184,3 +1184,99 @@ impl Solution {
     }
 }
 ```
+
+---
+
+#### 最小栈 -- 栈
+
+设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
+
+实现 MinStack 类:
+
+MinStack() 初始化堆栈对象。
+void push(int val) 将元素val推入堆栈。
+void pop() 删除堆栈顶部的元素。
+int top() 获取堆栈顶部的元素。
+int getMin() 获取堆栈中的最小元素。
+
+```rust
+use std::cmp;
+struct MinStack {
+    stack: Vec<i32>,
+    min_stack: Vec<i32>,
+}
+
+
+/**
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl MinStack {
+
+    fn new() -> Self {
+        MinStack {
+            stack: Vec::new(),
+            min_stack: Vec::new()
+        }
+    }
+    
+    fn push(&mut self, val: i32) {
+        self.stack.push(val);
+        if self.min_stack.is_empty() {
+            self.min_stack.push(val);
+            return;
+        }
+        self.min_stack.push(cmp::min(val, *self.min_stack.last().unwrap()));
+    }
+    
+    fn pop(&mut self) {
+        if self.stack.is_empty() { return; }
+        self.stack.pop();
+        self.min_stack.pop();
+    }
+    
+    fn top(&self) -> i32 {
+        return *self.stack.last().unwrap();
+    }
+    
+    fn get_min(&self) -> i32 {
+        return *self.min_stack.last().unwrap();
+    }
+}
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * let obj = MinStack::new();
+ * obj.push(val);
+ * obj.pop();
+ * let ret_3: i32 = obj.top();
+ * let ret_4: i32 = obj.get_min();
+ */
+```
+
+---
+
+#### 打家劫舍 -- 动态规划
+
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+
+```rust
+use std::cmp;
+impl Solution {
+    pub fn rob(nums: Vec<i32>) -> i32 {
+        if nums.is_empty() {return 0;}
+        if nums.len() == 1 {
+            return nums[0];
+        }
+        let mut dp = vec![0; nums.len()];
+        dp[0] = nums[0];
+        dp[1] = cmp::max(nums[0], nums[1]);
+        for i in 2..nums.len() {
+            dp[i] = cmp::max(dp[i - 2] + nums[i], dp[i - 1]);
+        }
+        *dp.last().unwrap()
+    }
+}
+```
