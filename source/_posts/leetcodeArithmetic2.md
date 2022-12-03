@@ -1437,3 +1437,43 @@ impl Trie {
  * let ret_3: bool = obj.starts_with(prefix);
  */
 ```
+
+___
+
+#### 数组中的第K个最大元素 -- 堆排序
+
+```ts
+function findKthLargest(nums: number[], k: number): number {
+    let heapSize = nums.length;
+    buiildMaxHeap(nums, heapSize);
+    for (let i = nums.length - 1; i >= nums.length - k + 1; i--) {
+        swap(nums, 0 , i);
+        --heapSize;
+        maxHeapify(nums, 0, heapSize);
+    }
+    return nums[0]
+};
+const buiildMaxHeap = (nums: number[], heapSize: number) => {
+    for (let i = Math.floor(heapSize/2) - 1; i >= 0; i--) {
+        maxHeapify(nums, i, heapSize);
+    }
+}
+const maxHeapify = (nums: number[], i: number, heapSize: number) => {
+    let l = i * 2 + 1, r = i * 2 + 2, largest = i;
+    if (l < heapSize && nums[l] > nums[largest]) {
+        largest = l;
+    }
+    if (r < heapSize && nums[r] > nums[largest]) {
+        largest = r
+    }
+    if (largest !== i) {
+        swap(nums, i, largest);
+        maxHeapify(nums, largest, heapSize)
+    }
+}
+const swap = (a: number[], i: number, j: number) => {
+    let temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+}
+```
