@@ -1568,3 +1568,38 @@ impl Solution {
     }
 }
 ```
+
+---
+
+#### 除自身以外数组的乘积 -- 左右乘积列表
+
+给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积 。
+
+题目数据 保证 数组 nums之中任意元素的全部前缀元素和后缀的乘积都在  32 位 整数范围内。
+
+请不要使用除法，且在 O(n) 时间复杂度内完成此题。
+
+```rust
+impl Solution {
+    pub fn product_except_self(nums: Vec<i32>) -> Vec<i32> {
+        let mut L = vec![1; nums.len()];
+        let mut R = vec![1; nums.len()];
+        let mut answer = vec![1; nums.len()];
+        let length = nums.len();
+        L[0] = 1;
+        R[length - 1] = 1;
+        for i in 1..length {
+            L[i] = nums[i - 1] * L[i - 1];
+        }
+        for i in (0..length - 1).rev() {
+            R[i] = nums[i + 1] * R[i + 1];
+        }
+        for i in 0..length {
+            answer[i] = L[i] * R[i];
+        }
+        answer
+    }
+}
+```
+
+---
