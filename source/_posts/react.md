@@ -810,3 +810,221 @@ hashType window.location.hash 使用的 hash 类型，有如下几种：
 slash - 后面跟一个斜杠，例如 #/ 和 #/sunshine/lollipops；
 noslash - 后面没有斜杠，例如 # 和 #sunshine/lollipops；
 hashbang - Google 风格的 ajax crawlable，例如 #!/ 和 #!/sunshine/lollipops。
+
+---
+
+#### 特殊情况解决问题
+
+##### 在 React 中，父组件传递给子组件的回调函数中涉及异步操作（例如 fetch 请求）。子组件调用该回调后，如何确保在回调异步请求期间组件未被卸载，从而避免内存泄漏？
+
+在 React 中，如果组件在异步请求未完成前被卸载，会导致内存泄漏警告。为了解决此问题，可以在 useEffect 钩子中返回清理函数，或使用一个标志变量来取消异步操作
+
+```jsx
+const MyComponent = ({ fetchData }) => {
+  useEffect(() => {
+    let isMounted = true;
+    fetchData().then((data) => {
+      if (isMounted) {
+        // 更新状态
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchData]);
+};
+```
+
+---
+
+##### React 的 useEffect 钩子中如何优雅地处理依赖项更新，避免由于闭包问题导致引用的变量值不正确？请举例说明如何处理这种情况。
+
+React 的 useEffect 使用了闭包，可能导致其访问的变量值为旧值。可以通过将依赖项正确地传入 useEffect，或者使用 useRef 来存储最新值来解决。
+
+```jsx
+const [count, setCount] = useState(0);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setCount((prevCount) => prevCount + 1); // 使用回调函数来确保获取最新的 `count`
+  }, 1000);
+  return () => clearInterval(interval);
+}, []);
+
+```
+
+---
+
+##### 在一个 React 项目中，多个组件共享同一个状态并需要及时同步更新。如何在不使用全局状态管理库（如 Redux 或 Context）的情况下实现这一功能？
+
+可以使用 useState 和 useContext 结合来共享状态
+
+```jsx
+const SharedStateContext = React.createContext();
+
+const SharedStateProvider = ({ children }) => {
+  const [sharedState, setSharedState] = useState(null);
+  return (
+    <SharedStateContext.Provider value={{ sharedState, setSharedState }}>
+      {children}
+    </SharedStateContext.Provider>
+  );
+};
+
+// 子组件使用
+const ChildComponent = () => {
+  const { sharedState, setSharedState } = useContext(SharedStateContext);
+  return <div>{sharedState}</div>;
+};
+
+```
+
+---
+
+##### 如何在 React 中实现一个动态表单，其中的字段数量和类型由服务器返回的数据决定？请描述实现步骤并说明如何确保每个字段都能正确更新状态。
+
+可以使用 useState 来存储动态字段，并渲染它们
+
+```jsx
+
+const DynamicForm = ({ fields }) => {
+  const [formState, setFormState] = useState(() =>
+    fields.reduce((acc, field) => ({ ...acc, [field.name]: '' }), {})
+  );
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormState((prev) => ({ ...prev, [name]: value }));
+  };
+
+  return (
+    <form>
+      {fields.map((field) => (
+        <input
+          key={field.name}
+          name={field.name}
+          value={formState[field.name]}
+          onChange={handleChange}
+        />
+      ))}
+    </form>
+  );
+};
+
+```
+
+---
+
+##### 你在开发一个有复杂交互的表单页面，页面中有一个 useEffect 钩子监听了多个状态变量。当其中一个状态变化时，如何防止 useEffect 被不必要的触发？
+
+可以使用 useRef 来保存不需要触发的状态值
+
+```jsx
+const [state, setState] = useState(0);
+const prevStateRef = useRef();
+
+useEffect(() => {
+  if (prevStateRef.current !== state) {
+    // 仅当 state 变化时执行
+  }
+  prevStateRef.current = state;
+}, [state]);
+
+```
+
+---
+
+##### 在 React 项目中，当组件使用 useRef 持有 DOM 引用时，如何确保在该 DOM 元素动态更新（例如高度改变）时 useEffect 钩子能检测到变化？
+
+使用 ResizeObserver 结合 useRef
+
+```jsx
+const ref = useRef();
+
+useEffect(() => {
+  const observer = new ResizeObserver((entries) => {
+    for (let entry of entries) {
+      console.log('New size:', entry.contentRect.height);
+    }
+  });
+  if (ref.current) {
+    observer.observe(ref.current);
+  }
+  return () => observer.disconnect();
+}, []);
+
+```
+
+---
+
+##### 你需要实现一个组件，要求每次渲染时生成不同的 ID 并将其存储，但该 ID 不会在重新渲染时丢失。如何使用 React 钩子实现该功能？
+
+使用 useMemo 或 useRef
+
+```jsx
+const uniqueId = useMemo(() => `id-${Math.random().toString(36).substr(2, 9)}`, []);
+// 或者
+const uniqueId = useRef(`id-${Math.random().toString(36).substr(2, 9)}`).current;
+
+```
+
+---
+
+##### React 中如何防止 shouldComponentUpdate 或 React.memo 因属性对象浅比较而导致不必要的重渲染？请解释如何解决对象或数组作为 props 的优化问题。
+
+将传递的对象或数组使用 useMemo 缓存
+
+```jsx
+const memoizedProps = useMemo(() => ({ key: value }), [value]);
+return <MyComponent prop={memoizedProps} />;
+
+```
+
+---
+
+##### 在 React 中，如果多个组件都需要订阅同一个事件（如 window 的 resize 事件），但又不希望每个组件都创建一个独立的事件监听器，如何优化实现？
+
+将事件监听器提升到父组件，并通过 Context 或 props 将其传递
+
+```jsx
+useEffect(() => {
+  const handleResize = () => {
+    console.log('Resized');
+  };
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
+```
+
+---
+
+##### 如何在 React 的 useEffect 中使用 async/await？为什么 useEffect 不能直接接受 async 函数，如何解决这一问题？
+
+useEffect 中不能直接使用 async 函数。应在钩子内定义异步函数并调用
+
+```jsx
+useEffect(() => {
+  const fetchData = async () => {
+    const data = await fetch('/api/data');
+    // 处理 data
+  };
+  fetchData();
+}, []);
+
+```
+
+---
+
+##### 一个 useState 更新的操作需要基于其当前值进行计算，但异步操作导致状态不同步，如何确保 setState 时状态始终是最新的？
+
+使用函数更新 setState
+
+```jsx
+setState((prevState) => {
+  return prevState + 1;
+});
+
+```
+
+---

@@ -47,7 +47,7 @@ this.$refs.child.func()
 
 #### Vue 的性能优化方法
 
-1.路由懒加载
+1.路由懒加载import
 
 ```
 const router = new vueRouter({
@@ -97,6 +97,10 @@ async created() {
     </template>
 </recycle-scroller>
 ```
+
+分页：分批加载和渲染数据。
+懒加载：对图片和多媒体内容使用懒加载技术。
+组件分片渲染：利用 requestAnimationFrame 等机制。
 
 6.事件的销毁
 
@@ -1133,5 +1137,229 @@ https://blog.csdn.net/m0_64969829/article/details/122881221
 #### Vue在父组件中使用子组件生命周期
 
 https://www.cnblogs.com/rainbowLover/p/13229003.html
+
+---
+
+#### 特殊问题解决
+
+##### 在 Vue 中如何实现父组件与子组件之间的数据同步？如何确保在父组件更新数据时，子组件能够及时接收到更新，但在子组件中修改数据不会直接影响父组件的数据？
+
+在 Vue 中，父组件通过 props 向子组件传递数据，子组件可以通过 emit 向父组件发送事件以更新数据。如果需要确保父组件的数据更新时子组件接收最新数据，而子组件修改数据不直接影响父组件，可以使用 v-model 在子组件中实现双向绑定，或使用数据拷贝
+
+ ```js
+    <ChildComponent :value="parentData" @update:value="parentData = $event" />
+
+    <template>
+    <input :value="value" @input="$emit('update:value', $event.target.value)" />
+    </template>
+    <script>
+    export default {
+    props: ['value']
+    };
+    </script>
+
+ ```
+
+---
+
+##### 在 Vue 中，当使用 v-model 实现双向数据绑定时，如何自定义组件使其能够与 v-model 配合工作？
+
+```js
+<template>
+  <input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
+</template>
+<script>
+export default {
+  props: ['modelValue']
+};
+</script>
+
+```
+
+---
+
+##### 在 Vue 3 中使用 Composition API 时，如何在多个组件之间共享逻辑而避免代码重复？请解释如何使用 composables。
+
+在 Vue 3 中，composables 是用来复用逻辑的函数，通常以 useXxx 命名
+
+```js
+// useCounter.js
+import { ref } from 'vue';
+export function useCounter() {
+  const count = ref(0);
+  const increment = () => count.value++;
+  return { count, increment };
+}
+
+// 在组件中使用
+import { useCounter } from './useCounter';
+const { count, increment } = useCounter();
+
+```
+
+---
+
+##### 你正在开发一个复杂的 Vue 应用，需要在某个组件的 created 钩子中请求数据并将其存储在 data 中，但在请求完成前组件可能会被销毁。如何避免请求未完成导致的内存泄漏？
+
+在异步请求中可使用标志变量或取消请求的方法
+
+```js
+<script>
+export default {
+  data() {
+    return { isMounted: true };
+  },
+  created() {
+    this.fetchData();
+  },
+  beforeDestroy() {
+    this.isMounted = false;
+  },
+  methods: {
+    async fetchData() {
+      const data = await fetchSomeData();
+      if (this.isMounted) {
+        this.data = data;
+      }
+    }
+  }
+};
+</script>
+
+```
+
+---
+
+##### Vue 中使用 ref 和 reactive 有什么区别？在什么情况下使用 ref 比 reactive 更合适？
+
+ref 适用于简单值和需要解包的场景（例如基础类型）。
+reactive 适合用于对象和嵌套结构。
+
+```js
+const count = ref(0); // 基本类型
+const user = reactive({ name: 'John', age: 30 }); // 对象
+```
+
+---
+
+##### 在 Vue 项目中，如何确保一个组件在 beforeRouteLeave 钩子中阻止用户在未保存更改的情况下离开当前页面？
+
+```js
+<script>
+export default {
+  beforeRouteLeave(to, from, next) {
+    if (!this.isSaved) {
+      const answer = window.confirm('You have unsaved changes. Do you really want to leave?');
+      if (answer) {
+        next();
+      } else {
+        next(false);
+      }
+    } else {
+      next();
+    }
+  }
+};
+</script>
+
+```
+
+---
+
+##### 如何在 Vue 项目中动态加载和使用外部插件，而不在项目启动时直接引入？
+
+```js
+async function loadPlugin() {
+  const module = await import('some-external-plugin');
+  module.default();
+}
+
+```
+
+---
+
+##### 在使用 Vuex 时，如何确保异步操作在多个组件中不会造成数据竞争条件或不一致问题？
+
+确保所有异步调用在 Vuex 中的 actions 中完成，并使用 Promise 链或 async/await 来协调多个请求。
+
+```js
+actions: {
+  async fetchData({ commit }) {
+    const data = await apiCall();
+    commit('setData', data);
+  }
+}
+
+```
+
+---
+
+##### Vue 3 的 teleport 是什么？请举例说明如何在应用中使用它来优化布局或样式管理。
+
+teleport 用来将 DOM 渲染到当前组件树外部的目标位置。
+
+```js
+<template>
+  <teleport to="body">
+    <div class="modal">This is a modal</div>
+  </teleport>
+</template>
+
+```
+
+---
+
+##### 如何在 Vue 中通过事件总线实现兄弟组件之间的通信？在 Vue 3 中，有哪些更推荐的方法替代事件总线？
+
+1.provide 和 inject 是 Vue 3 中常用的用于祖先组件和后代组件之间共享数据的 API。它可以实现跨层级的通信，避免层层传递 props
+
+```js
+<script>
+export default {
+  setup() {
+    provide('sharedData', 'Hello from ancestor');
+  }
+};
+</script>
+
+<script>
+export default {
+  setup() {
+    const sharedData = inject('sharedData');
+    return { sharedData };
+  }
+};
+</script>
+<template>
+  <div>{{ sharedData }}</div>
+</template>
+
+```
+
+2.全局状态管理
+
+3.Composable Functions
+
+```js
+// useSharedState.js
+import { ref } from 'vue';
+
+const sharedValue = ref('Initial value');
+
+export function useSharedState() {
+  return { sharedValue };
+}
+
+
+import { useSharedState } from './useSharedState';
+
+export default {
+  setup() {
+    const { sharedValue } = useSharedState();
+    return { sharedValue };
+  }
+};
+
+```
 
 ---
