@@ -1160,3 +1160,244 @@ const handleClick = () => {
 ```
 
 ---
+
+#### useReducer
+
+useReducer 是 React 提供的一个 Hook，用于管理更复杂的状态逻辑。它是 useState 的替代方案，适合当状态变化逻辑包含多个子值或者需要基于特定操作类型来更新状态的情况。
+
+```jsx
+const [state, dispatch] = useReducer(reducer, initialState, init);
+
+```
+
+reducer：一个纯函数，接收当前状态 (state) 和动作 (action)，返回新的状态。
+initialState：状态的初始值。
+init（可选）：用于惰性初始化的函数。
+state：当前状态值。
+dispatch：派发动作 (action) 的方法。
+
+##### 为什么使用 useReducer？
+
+复杂状态管理：当状态包含多个子值或依赖复杂的逻辑时，useReducer 比 useState 更清晰。
+分离逻辑：通过 reducer 将状态管理逻辑抽离，方便维护和测试。
+适合团队协作：useReducer 的模式类似于 Redux，团队成员可能更熟悉。
+
+```jsx
+import React, { useReducer } from "react";
+
+// 定义 reducer 函数
+function reducer(state, action) {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + 1 };
+    case "decrement":
+      return { count: state.count - 1 };
+    case "reset":
+      return { count: 0 };
+    default:
+      throw new Error("Unknown action");
+  }
+}
+
+function Counter() {
+  const initialState = { count: 0 }; // 初始状态
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    <div>
+      <p>Count: {state.count}</p>
+      <button onClick={() => dispatch({ type: "increment" })}>+</button>
+      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+      <button onClick={() => dispatch({ type: "reset" })}>Reset</button>
+    </div>
+  );
+}
+
+export default Counter;
+
+```
+
+---
+
+#### 用hooks实现一个redux功能
+
+使用 useReducer 管理全局状态。
+结合 Context 提供状态和 dispatch 方法。
+通过 useContext 在子组件中访问状态和分发动作的方法。
+
+步骤 1: 创建全局状态管理器
+使用 createContext 和 useReducer 创建一个类似 Redux 的状态管理功能。
+
+```jsx
+import React, { createContext, useReducer, useContext } from "react";
+
+// 定义初始状态
+const initialState = {
+  count: 0,
+  user: null,
+};
+
+// 定义 reducer 函数
+function reducer(state, action) {
+  switch (action.type) {
+    case "increment":
+      return { ...state, count: state.count + 1 };
+    case "decrement":
+      return { ...state, count: state.count - 1 };
+    case "setUser":
+      return { ...state, user: action.payload };
+    default:
+      throw new Error(`Unknown action type: ${action.type}`);
+  }
+}
+
+// 创建 Context
+const GlobalStateContext = createContext();
+const GlobalDispatchContext = createContext();
+
+// 创建全局状态管理 Provider
+export function GlobalProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    <GlobalStateContext.Provider value={state}>
+      <GlobalDispatchContext.Provider value={dispatch}>
+        {children}
+      </GlobalDispatchContext.Provider>
+    </GlobalStateContext.Provider>
+  );
+}
+
+// 自定义 Hook: 获取全局状态
+export function useGlobalState() {
+  const context = useContext(GlobalStateContext);
+  if (context === undefined) {
+    throw new Error("useGlobalState must be used within a GlobalProvider");
+  }
+  return context;
+}
+
+// 自定义 Hook: 获取全局 dispatch
+export function useGlobalDispatch() {
+  const context = useContext(GlobalDispatchContext);
+  if (context === undefined) {
+    throw new Error("useGlobalDispatch must be used within a GlobalProvider");
+  }
+  return context;
+}
+
+```
+
+步骤 2: 在顶层组件中提供全局状态
+使用 GlobalProvider 包裹应用的组件树，提供全局状态和 dispatch。
+
+```jsx
+import React from "react";
+import { GlobalProvider } from "./GlobalState";
+import Counter from "./Counter";
+import User from "./User";
+
+function App() {
+  return (
+    <GlobalProvider>
+      <Counter />
+      <User />
+    </GlobalProvider>
+  );
+}
+
+export default App;
+
+```
+
+步骤 3: 在子组件中消费全局状态和 dispatch
+
+```jsx
+import React from "react";
+import { useGlobalState, useGlobalDispatch } from "./GlobalState";
+
+function Counter() {
+  const state = useGlobalState();
+  const dispatch = useGlobalDispatch();
+
+  return (
+    <div>
+      <p>Count: {state.count}</p>
+      <button onClick={() => dispatch({ type: "increment" })}>+</button>
+      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+    </div>
+  );
+}
+
+export default Counter;
+
+```
+
+---
+
+#### Context和useContext区别
+
+Context 是 React 提供的一个全局状态管理工具，用于跨组件共享数据而不需要通过逐层传递 props。
+
+用法
+Context 是通过 React.createContext 创建的一个对象，包括两个核心部分：
+
+Provider：用于提供数据。
+Consumer：用于消费数据（在较新的代码中，useContext 更常用）。
+
+```jsx
+import React, { createContext } from "react";
+
+const MyContext = createContext(); // 创建 Context
+
+function App() {
+  return (
+    <MyContext.Provider value={{ user: "Alice" }}> {/* 提供数据 */}
+      <Child />
+    </MyContext.Provider>
+  );
+}
+
+function Child() {
+  return (
+    <MyContext.Consumer> {/* 消费数据 */}
+      {({ user }) => <p>User: {user}</p>}
+    </MyContext.Consumer>
+  );
+}
+
+```
+
+Context.Provider 包裹的组件树都可以访问到传递的值。
+Consumer 需要用回调函数来获取上下文数据（旧式方式）。
+
+useContext 是 React 的一个 Hook，用于函数组件中直接读取 Context 的值，简化了数据获取的过程，取代了旧的 Context.Consumer。
+
+用法
+在函数组件中使用 useContext 获取上下文的值。
+
+```jsx
+import React, { createContext, useContext } from "react";
+
+const MyContext = createContext(); // 创建 Context
+
+function App() {
+  return (
+    <MyContext.Provider value={{ user: "Alice" }}> {/* 提供数据 */}
+      <Child />
+    </MyContext.Provider>
+  );
+}
+
+function Child() {
+  const contextValue = useContext(MyContext); // 使用 useContext 获取值
+  return <p>User: {contextValue.user}</p>;
+}
+
+```
+
+简化了 Context 数据的使用，去掉了嵌套回调函数的复杂性。
+只能在函数组件或自定义 Hook 中使用。
+
+---
+
