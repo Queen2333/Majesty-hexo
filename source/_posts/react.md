@@ -1003,6 +1003,13 @@ useEffect(() => {
 
 useEffect 中不能直接使用 async 函数。应在钩子内定义异步函数并调用
 
+这是因为 React 的 useEffect 回调函数需要返回一个清理函数（或什么都不返回），而 async 函数返回的是一个 Promise，与 React 对 useEffect 的设计要求不匹配。
+
+在 React 的设计中，useEffect 回调函数的返回值被用作清理函数。如果返回的是一个函数，React 会在组件卸载或依赖项更新时调用它以清理资源。
+如果直接传递一个 async 函数作为 useEffect 的回调，async 函数实际上返回的是一个 Promise，而不是清理函数。
+
+如果 useEffect 支持直接返回 Promise，React 可能无法在异步操作完成之前进行清理。这会导致清理操作的顺序混乱，影响依赖项的更新和资源管理。
+
 ```jsx
 useEffect(() => {
   const fetchData = async () => {
