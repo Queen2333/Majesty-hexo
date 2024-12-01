@@ -1,6 +1,6 @@
 ---
 title: Promise
-featured_image: ./images/falcon.jpeg
+featured_image: ./images/gotg.jpeg
 ---
 
 #### Promise 的状态有哪些？它们如何转换？

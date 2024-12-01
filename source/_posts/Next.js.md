@@ -1,6 +1,6 @@
 ---
 title: Next.js
-featured_image: ./images/falcon.jpeg
+featured_image: ./images/gamora.jpeg
 ---
 
 
