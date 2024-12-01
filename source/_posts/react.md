@@ -1028,3 +1028,61 @@ setState((prevState) => {
 ```
 
 ---
+
+#### 为什么 Hooks 只能在函数组件或自定义 Hook 的最外层调用
+
+React 的设计目标是保证组件行为的一致性，防止因为调用顺序变化引起的状态管理错误。Hooks 的这一规则（称为 Hook 的“规则”或“法则”）确保了 React 内部能正确追踪每个 Hook 的状态。
+
+1. Hook 调用顺序的保证
+
+React 通过记录 Hook 的调用顺序来管理它们的状态。
+如果 Hook 被放在条件语句或循环中，调用顺序可能会在每次渲染时发生变化，从而导致状态的错乱。例如：
+
+```js
+// 错误示例
+if (condition) {
+  useState(0); // 可能这次渲染被调用，下次渲染未调用
+}
+```
+
+上述代码可能在某些渲染中跳过 useState 的调用，导致 React 无法正确对应 Hook 与状态，最终抛出错误。
+
+2. React 如何管理 Hooks 状态
+
+React 内部为每个组件维护了一个Hook 调用链表。在每次渲染时，React 根据调用顺序依次分配每个 Hook 的状态。如果 Hook 调用顺序混乱，链表的结构会被破坏，导致状态更新错误。
+
+3. 一致的渲染逻辑
+
+为了保持组件行为的一致性，React 规定 Hooks 必须始终按照固定顺序调用，确保：
+
+每次渲染访问的 Hook 对应的状态相同。
+不会因为某些条件分支导致状态“丢失”或“错位”。
+
+4. 解决复杂逻辑的方式
+
+当需要在条件语句或循环中使用 Hooks 时，可以将这些逻辑抽离到自定义 Hook 中：
+
+```js
+function useConditionalHook(condition) {
+  const state = useState(0);
+  if (condition) {
+    // 在这里可以使用任何 Hooks，但要遵守调用规则
+  }
+  return state;
+}
+
+// 在组件中
+function MyComponent() {
+  const [value] = useConditionalHook(true);
+  return <div>{value}</div>;
+}
+
+```
+
+5. 违反规则会发生什么？
+
+如果尝试在条件分支或循环中调用 Hook，React 会报错：
+
+```sql
+React Hook "useXXX" is called conditionally. React Hooks must be called in the exact same order in every component render.
+```
