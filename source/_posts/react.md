@@ -1086,3 +1086,77 @@ function MyComponent() {
 ```sql
 React Hook "useXXX" is called conditionally. React Hooks must be called in the exact same order in every component render.
 ```
+
+---
+
+#### 使用useState，set后有时候会拿不到最新的值是什么原因？怎么解决
+
+##### 原因分析
+状态更新是异步的
+React 会将多次状态更新操作批量处理，以提高性能。setState 后，状态并不会立刻更新，而是等到组件重新渲染时，React 才会更新到最新的状态值。
+
+闭包陷阱
+在函数组件中，某些回调函数会捕获函数执行时的状态快照。如果状态更新后使用的是旧的状态引用，就会导致拿到旧值的问题
+
+##### 解决方法
+
+1. 使用 useEffect 确保状态更新完成后再操作
+如果需要在状态更新后做一些事情，可以借助 useEffect：
+
+```jsx
+const [count, setCount] = useState(0);
+
+useEffect(() => {
+  console.log("count 更新了:", count);
+}, [count]); // 当 count 变化时触发
+
+```
+
+2. 使用函数式更新
+函数式更新可以避免闭包捕获旧值的问题。setState 接收一个函数作为参数，函数的参数是最新的状态值：
+
+```jsx
+const [count, setCount] = useState(0);
+
+const handleClick = () => {
+  setCount((prevCount) => prevCount + 1); // 使用最新的 prevCount
+  console.log("最新 count:", count); // 这里仍然是旧值，但状态已正确更新
+};
+
+```
+
+3. 在事件处理器中使用最新状态值
+如果状态更新后需要立刻使用最新的状态值，可以显式传递或维护一个变量。例如：
+
+```jsx
+const [count, setCount] = useState(0);
+
+const handleClick = () => {
+  setCount((prevCount) => {
+    const newCount = prevCount + 1;
+    console.log("最新 count:", newCount);
+    return newCount;
+  });
+};
+
+```
+
+4. 使用 useRef 存储最新状态值
+如果需要在整个组件生命周期中获取最新状态，可以使用 useRef 存储：
+
+```jsx
+const [count, setCount] = useState(0);
+const countRef = useRef(count);
+
+useEffect(() => {
+  countRef.current = count; // 同步最新状态到 ref
+}, [count]);
+
+const handleClick = () => {
+  setCount(count + 1);
+  console.log("最新 count:", countRef.current); // 始终获取最新值
+};
+
+```
+
+---
