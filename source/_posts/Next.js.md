@@ -188,15 +188,17 @@ featured_image: ./images/gamora.jpeg
 
 #### SSR,SSG,ISR分别是什么
 
-    SSR (Server-Side Rendering): 动态生成 HTML 页面，每次用户请求时在服务器渲染页面内容，适用于需要实时数据的场景。
+    CSR (Client-Side Rendering) 是在客户端执行页面渲染的方式。整个应用通常以一个单独的 HTML 文件和 JavaScript 包的形式从服务器传输到浏览器，页面的内容通过 JavaScript 渲染。数据的请求与页面内容的加载发生在浏览器中。
 
-    SSG (Static-Site Generation): 在构建时生成静态 HTML 页面，适合内容稳定的站点，加载速度快，适用 SEO 场景。
+    SSR (Server-Side Rendering): 动态生成 HTML 页面，每次用户请求时在服务器渲染页面内容，适用于需要实时数据的场景。当用户访问网页时，浏览器向服务器发送关于该页面的请求。
 
-    ISR (Incremental Static Regeneration): 结合 SSG 和 SSR，在构建后可以按需更新部分页面，无需重新部署，提升动态内容性能。
+    SSG (Static-Site Generation): 在构建时生成静态 HTML 页面，适合内容稳定的站点，加载速度快，适用 SEO 场景。页面在构建期间只获取一次数据。静态生成页面非常快，性能良好，因为所有页面都事先构建。
+
+    ISR (Incremental Static Regeneration): 结合 SSG 和 SSR，在构建后可以按需更新部分页面，无需重新部署，提升动态内容性能。有时用户想使用SSG，但又想定期更新内容，这时候增量静态生成（ISG）大有帮助。
 
 ##### 在 Next.js 中可以通过以下方式实现 SSR、SSG 和 ISR：
 
-    1. SSR (Server-Side Rendering)
+    1. SSR (Server-Side Rendering)服务端渲染
 
     ```js
     export async function getServerSideProps(context) {
@@ -206,7 +208,7 @@ featured_image: ./images/gamora.jpeg
 
     ```
 
-    2. SSG (Static-Site Generation)
+    2. SSG (Static-Site Generation)静态站点生成
 
     ```js
     export async function getStaticProps() {
@@ -216,7 +218,7 @@ featured_image: ./images/gamora.jpeg
 
     ```
 
-    3. ISR (Incremental Static Regeneration)
+    3. ISR (Incremental Static Regeneration)增量静态生成
 
     ```js
     export async function getStaticProps() {
@@ -228,5 +230,9 @@ featured_image: ./images/gamora.jpeg
     }
 
     ```
+
+    4.CSR (Client-Side Rendering)客户端渲染
+
+    通过移除 getServerSideProps 和 getStaticProps，就可以实现纯 CSR
 
 ---
