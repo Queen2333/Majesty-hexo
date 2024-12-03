@@ -183,3 +183,50 @@ featured_image: ./images/gamora.jpeg
     7.避免跨页面共享状态：
 
     确保 React 组件中的状态不会在页面之间不一致。避免全局状态（如通过 Redux）在不同页面之间共享不一致的数据。
+
+---
+
+#### SSR,SSG,ISR分别是什么
+
+    SSR (Server-Side Rendering): 动态生成 HTML 页面，每次用户请求时在服务器渲染页面内容，适用于需要实时数据的场景。
+
+    SSG (Static-Site Generation): 在构建时生成静态 HTML 页面，适合内容稳定的站点，加载速度快，适用 SEO 场景。
+
+    ISR (Incremental Static Regeneration): 结合 SSG 和 SSR，在构建后可以按需更新部分页面，无需重新部署，提升动态内容性能。
+
+##### 在 Next.js 中可以通过以下方式实现 SSR、SSG 和 ISR：
+
+    1. SSR (Server-Side Rendering)
+
+    ```js
+    export async function getServerSideProps(context) {
+        const data = await fetchData();
+        return { props: { data } };
+    }
+
+    ```
+
+    2. SSG (Static-Site Generation)
+
+    ```js
+    export async function getStaticProps() {
+        const data = await fetchData();
+        return { props: { data } };
+    }
+
+    ```
+
+    3. ISR (Incremental Static Regeneration)
+
+    ```js
+    export async function getStaticProps() {
+        const data = await fetchData();
+        return {
+            props: { data },
+            revalidate: 10, // 每10秒重新生成页面
+        };
+    }
+
+    ```
+
+---
