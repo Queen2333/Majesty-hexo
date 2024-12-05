@@ -360,7 +360,7 @@ let copy2 = Object.assign({}, {x:1})
 
 ```js
 // 深拷贝
-// 1. JOSN.stringify()/JSON.parse()
+// 1. JOSN.stringify()/JSON.parse()，无法拷贝函数、循环引用
 let obj = {a: 1, b: {x: 3}}
 JSON.parse(JSON.stringify(obj))
 
@@ -374,6 +374,20 @@ function deepClone(obj) {
   }
   return copy
 }
+
+function deepClone(obj, hash = new WeakMap()) {
+  if (obj === null || typeof obj !== 'object') return obj;
+  if (hash.has(obj)) return hash.get(obj);
+
+  const copy = Array.isArray(obj) ? [] : {};
+  hash.set(obj, copy);
+
+  for (const key in obj) {
+    copy[key] = deepClone(obj[key], hash);
+  }
+  return copy;
+}
+
 ```
 
 ---
